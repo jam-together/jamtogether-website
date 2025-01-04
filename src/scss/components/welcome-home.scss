@@ -1,0 +1,84 @@
+div.center {
+  width: 30em;
+  margin: 4em auto 1em;
+
+  &>h1, &>h2 {
+    text-align: center;
+  }
+
+  &>h1 {
+    color: $primary;
+  }
+
+  &>h2 {
+    margin-bottom: 1em;
+  }
+
+  a {
+    display: block;
+    &>button {
+      width: 100%;
+    }
+  }
+
+  &>div.choose {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+
+    &>a>button{
+      width: 100%;
+      font-size: 1.4em;
+
+      &.icon.plus-circle::before {
+        @include icon("plus-circle");
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+      }
+    }
+
+    &>span.or {
+      position: relative;
+      width: 100%;
+      display: block;
+
+      &>span.label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: $black;
+        padding: 0 .5em;
+
+        font-size: 1.3em;
+        font-family: "sora-bold", sans-serif;
+      }
+      &>span.line {
+        width: 100%;
+        height: 3px;
+        background-color: $gray-1;
+        position: absolute;
+        top: 50%;
+        left: 0;
+
+        transform: translateY(-50%);
+      }
+    }
+
+    &>div.join-room {
+      display: flex;
+      gap: .5em;
+
+      & button {
+        text-transform: capitalize;
+        &::before {
+          @include icon("arrow-right");
+          position: unset;
+          font-size: 1.8em;
+        }
+      }
+    }
+  }
+}

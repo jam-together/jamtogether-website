@@ -1,0 +1,48 @@
+button {
+  background-color: transparent;
+  border: 1px solid $gray-1;
+
+  color: $gray-1;
+  font-size: 1em;
+  font-family: "publicsans-medium", sans-serif;
+
+  cursor: pointer;
+  padding: .8em 1em;
+  border-radius: 15px;
+  transition: all .5s ease;
+
+  &.icon {
+    &::before {
+      font-size: 1.5em;
+    }
+  }
+
+  &.primary {
+    color: $black;
+    background-color: $primary-100;
+  }
+
+  &:is(.primary, .secondary) {
+    border-color: $primary-100;
+    &:not(:disabled):is(:hover, :focus) {
+      background-color: $primary;
+      border-color: $primary;
+      &, a {
+        color: $black;
+      }
+    }
+    &:not(:disabled):focus {
+      box-shadow: $shadow-settings-1;
+    }
+
+    &:disabled {
+      opacity: 50%;
+      cursor: not-allowed;
+    }
+  }
+
+  &.secondary {
+    color: $primary;
+  }
+
+}

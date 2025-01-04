@@ -1,0 +1,200 @@
+div.error {
+  text-align: center;
+  margin: 2em 0;
+}
+
+div.wrapper {
+  //width: 30em;
+  margin: 2em 2em;
+}
+
+div.wrapper>header {
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid $gray-1;
+
+  &>h3.room-id {
+    text-align: center;
+
+    &>span {
+      background-color: $gray-3;
+      padding: .2em .5em;
+      border-radius: 15px;
+    }
+  }
+
+  &>h4.connected-to {
+    color: $primary;
+    text-align: center;
+    margin: 1em 0;
+  }
+}
+
+div.wrapper>header>div.search-field {
+  position: relative;
+  margin-top: 1.5em;
+
+  &>div.search-area {
+    position: relative;
+    &>span.search-icon::before {
+      @include icon("magnify");
+      font-size: 1.8em;
+
+      position: absolute;
+      color: $gray-2;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+    }
+  }
+
+  &>ul.search-results {
+    position: absolute;
+    transform: translateY(10px);
+    display: none;
+
+    &.active {
+      display: block;
+    }
+
+    background-color: $gray-3;
+
+    list-style: none;
+    width: 100%;
+    border-radius: 10px;
+
+    max-height: 19em;
+    overflow: auto;
+
+    z-index: 99;
+
+    &>li {
+      color: $gray-1;
+      font-size: 1.2em;
+
+      display: flex;
+      align-items: center;
+      gap: 1em;
+
+      padding: .8em 1em;
+
+      transition: all .5s ease;
+
+      &:is(:hover, :focus) {
+        background-color: $black;
+      }
+
+      &>img {
+        border-radius: 10px;
+        width: 3em;
+      }
+
+      &>div {
+        display: flex;
+        flex-direction: column;
+        gap: .1em;
+
+        &>span.artists {
+          color: $gray-2;
+          font-size: .8em;
+        }
+      }
+
+      &:not(:last-of-type) {
+        border-bottom: 1px solid $gray-2;
+      }
+    }
+  }
+}
+
+div.wrapper div.player {
+
+  &>header {
+    text-align: center;
+    &>h3 {
+      margin-bottom: .5em;
+    }
+    &>h4 {
+      color: $gray-2;
+    }
+  }
+  &>footer {
+    display: flex;
+    gap: 2em;
+    justify-content: center;
+    margin-top: 1em;
+
+    &>button {
+      background-color: $white;
+      color: $black;
+
+      &:hover {
+        background-color: $primary;
+        border-color: $primary;
+      }
+
+      &.icon {
+        padding: 1em;
+        border-radius: 100px;
+
+        &::before {
+          font-size: 2em;
+          position: unset;
+        }
+
+        &.previous::before {
+          @include icon("skip-previous");
+        }
+        &.next::before {
+          @include icon("skip-next");
+        }
+        &.pause::before {
+          @include icon("pause");
+        }
+        &.play::before {
+          @include icon("play");
+        }
+      }
+    }
+  }
+}
+
+div.wrapper div.queue {
+  margin: 1em 0;
+  color: $gray-1;
+
+  &>h4 {
+    border-bottom: 1px solid $gray-2;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+  }
+
+  &>ul {
+
+    &>li {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+
+      &:not(:last-of-type) {
+        border-bottom: 1px solid $gray-2;
+        padding-bottom: 1em;
+        margin-bottom: 1em;
+      }
+
+      &>img {
+        width: 3em;
+        border-radius: 10px;
+      }
+
+      &>div {
+        font-size: 1.3em;
+        color: $white;
+        &>span {
+          color: $gray-2;
+          font-size: .9em;
+        }
+      }
+    }
+  }
+}

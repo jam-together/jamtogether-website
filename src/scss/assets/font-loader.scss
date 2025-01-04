@@ -1,0 +1,26 @@
+$fonts: (
+    "publicsans-black",
+    "publicsans-bold",
+    "publicsans-light",
+    "publicsans-medium",
+    "publicsans-regular",
+    "publicsans-semibold",
+    "publicsans-thin",
+    "sora-bold",
+    "sora-light",
+    "sora-medium",
+    "sora-regular",
+    "sora-thin",
+);
+
+@each $font in $fonts {
+    @font-face {
+        font-family: $font;
+        src: url(/fonts/#{$font}.ttf);
+    }
+}
+
+@font-face {
+    font-family: mdi;
+    src: url(/node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf);
+}

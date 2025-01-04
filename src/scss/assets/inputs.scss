@@ -1,0 +1,128 @@
+label {
+  display: block;
+  margin-bottom: .5em;
+  color: $gray-1;
+
+  font-size: .9em;
+
+  &.required::after {
+    content: " *";
+    color: $red;
+  }
+}
+input {
+  padding: .8em;
+  border-radius: 10px;
+  width: 100%;
+
+  font-size: 1.4em;
+
+  &::placeholder {
+    font-size: .9em;
+    color: $gray-2;
+  }
+
+  border: unset;
+  background-color: $gray-3;
+  color: $gray-1;
+
+  font-family: "publicsans-light", sans-serif;
+}
+
+input[type="checkbox"] {
+  display: none;
+
+  &:is(:hover, :focus) {
+    & + label::before {
+      box-shadow: 0 0 0 4px #9381c540;
+    }
+  }
+
+  &:checked {
+
+    & + label::before {
+      background-color: $primary;
+    }
+    & + label::after {
+      color: $white;
+    }
+  }
+
+  & + label {
+    position: relative;
+    padding-left: 2em;
+    cursor: pointer;
+
+    &::before, &::after {
+      position: absolute;
+      display: block;
+      content: "";
+
+      transition: all .5s ease;
+    }
+
+    &::before {
+      left: 0;
+      top: 50%;
+
+      transform: translateY(-50%);
+      $size: 20px;
+
+      width: $size;
+      height: $size;
+      border-radius: 5px;
+      border: 1px solid $primary;
+    }
+
+    &::after {
+      color: transparent;
+
+      left: 2.5px;
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      font-family: mdi, serif;
+      position: absolute;
+      display: block;
+
+      font-size: 1em;
+      @include icon("check");
+    }
+  }
+
+}
+
+textarea {
+  width: 100%;
+  display: block;
+
+  //border: 1px solid $gray-3;
+  border: unset;
+  background-color: $gray-3;
+  color: $gray-1;
+
+  //box-shadow: $shadow-settings-1;
+
+  font-family: "publicsans-light", sans-serif;
+
+  transition: all .5s ease;
+
+  border-radius: 10px;
+  min-height: 10em;
+
+  font-size: 1em;
+  padding: 1em;
+
+  resize: horizontal;
+
+  &::placeholder {
+    font-size: .9em;
+    color: $gray-2;
+  }
+
+  /*&:is(:hover, :focus) {
+    border-color: $primary;
+    box-shadow: 0 0 0 4px #9381c540;
+  }*/
+}
