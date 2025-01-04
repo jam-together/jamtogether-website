@@ -12,7 +12,7 @@ function triggerWhenFound(elementSrc: HTMLElement, targetElement: HTMLElement, c
     return cb(false, parent);
 }
 
-let timer;
+let timer: number;
 function debunce(func: ((...args: any) => any), delay: number): ((...args: any) => void) {
   return function (...args) {
     clearTimeout(timer);

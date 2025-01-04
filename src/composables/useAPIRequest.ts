@@ -4,7 +4,7 @@ type TMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 interface IPreRequestParams {
   method?: TMethod;
-  endpoint: string;
+  endpoint?: string;
   immediate?: boolean;
 }
 
@@ -36,6 +36,9 @@ export default function useAPIRequest<T = {}>({ immediate = false, method = "GET
 
   async function handleRequest({ body, endpoint: overloadedEndpoint }: IRequestParams = {}) {
       try {
+        if(!overloadedEndpoint && !endpoint) {
+          throw new Error("You need to put at least one endpoint to your request.")
+        }
         const response = await fetch(_buildURL(overloadedEndpoint ?? endpoint), {
           method,
           headers: {
