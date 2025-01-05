@@ -27,7 +27,30 @@ watch(data, value => {
 }, { immediate: true });
 
 watch(credentials, async () => {
-   // TODO fix le bug au tout début là (quand on accepte les conditions spotify)
+  await createRoom();
+}, {immediate: true});
+
+watch(
+  [state, code],
+  async ([state, code]: any) => {
+    console.log(state, code);
+    if ((!credentials.value || hasExpired.value) && state && code) {
+      const {error, handleRequest} = useAPIRequest<ISpotifyCredentials>({ endpoint: "/spotify/access-token", method: "POST" });
+      const response = await handleRequest({ body: { code } });
+      if(!error.value) {
+        useSpotifyAuth().store(response);
+      } else {
+        console.error(error);
+      }
+      createRoom();
+    } else if((!credentials.value || hasExpired.value) && !state && !code) {
+      handleRequest();
+    }
+  },
+  { immediate: true },
+)
+
+async function createRoom() {
   if(!hasExpired.value) {
     const {handleRequest, error} = useAPIRequest({
       endpoint: "/rooms/create",
@@ -46,24 +69,5 @@ watch(credentials, async () => {
       location.href = data.redirectURI+"?client-id="+data.clientId;
     }
   }
-}, {immediate: true});
-
-watch(
-  [state, code],
-  async ([state, code]: any) => {
-    console.log(state, code);
-    if ((!credentials.value || hasExpired.value) && state && code) {
-      const {error, handleRequest} = useAPIRequest<ISpotifyCredentials>({ endpoint: "/spotify/access-token", method: "POST" });
-      const response = await handleRequest({ body: { code } });
-      if(!error.value) {
-        useSpotifyAuth().store(response);
-      } else {
-        console.error(error);
-      }
-    } else if((!credentials.value || hasExpired.value) && !state && !code) {
-      handleRequest();
-    }
-  },
-  { immediate: true },
-)
+}
 </script>
