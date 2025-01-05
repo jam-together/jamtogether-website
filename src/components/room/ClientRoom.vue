@@ -163,14 +163,7 @@ watch(websocket, ws => {
     if(!data) return;
 
     const m: RoomEvents.IncomingMessage = JSON.parse(data);
-    if(m.type === "MUSIC_SWITCHED") {
-      const message = m as RoomEvents.IncomingMessage<RoomEvents.Music.Switched>;
-      const newTrack = message.data?.newTrack;
-      const queue = message.data?.newQueue;
-      if(!newTrack || !queue || !room.value) return;
-      room.value.currentPlaying = newTrack;
-      room.value.queue = queue;
-    } else if(m.type === "MUSIC_ADDED" || m.type === "MUSIC_REMOVED") {
+    if(m.type === "MUSIC_ADDED" || m.type === "MUSIC_REMOVED") {
       const message = m as RoomEvents.IncomingMessage<RoomEvents.Music.Added|RoomEvents.Music.Removed>;
       const track = message.data?.track;
       if(!track || !room.value) return;
@@ -181,8 +174,8 @@ watch(websocket, ws => {
       setPlayed(false);
     }
 
-    if(m.type === "MUSIC_PAUSED" || m.type === "MUSIC_PLAYED") {
-      const message = m as RoomEvents.IncomingMessage<RoomEvents.Music.Paused|RoomEvents.Music.Played>;
+    if(m.type === "MUSIC_PAUSED" || m.type === "MUSIC_PLAYED" || m.type === "MUSIC_SWITCHED") {
+      const message = m as RoomEvents.IncomingMessage<RoomEvents.Music.Paused|RoomEvents.Music.Played|RoomEvents.Music.Switched>;
       const newTrack = message.data?.newTrack;
       const queue = message.data?.newQueue;
 
