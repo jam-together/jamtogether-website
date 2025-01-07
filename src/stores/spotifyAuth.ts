@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { computed, watch } from 'vue'
-import useAPIRequest from '@/composables/useAPIRequest.ts'
+import { computed } from 'vue'
 
 export interface ISpotifyCredentials {
   access_token: string
@@ -30,43 +29,11 @@ export const useSpotifyAuth = defineStore('spotifyAuth', () => {
       : null
   })
 
-  watch(
-    hasExpired,
-    async (val) => {
-      if (val) {
-        await _refreshToken()
-      }
-    },
-    { immediate: true },
-  )
-
   function store(credentials: ISpotifyCredentials) {
     const referenceTimestamp = Date.now()
     credentials.expires_at = referenceTimestamp + credentials.expires_in * 1000
 
     localStorage.setItem('spotify_credentials', JSON.stringify(credentials))
-  }
-
-  async function _refreshToken() {
-    if (!credentials.value) return
-    const { refresh_token } = credentials.value
-    const { error, handleRequest } = useAPIRequest<ISpotifyCredentials>({
-      method: 'POST',
-      endpoint: '/spotify/refresh-token',
-    })
-    const data = await handleRequest({
-      body: {
-        refreshToken: refresh_token,
-      },
-    })
-
-    if (error.value) {
-      localStorage.removeItem('spotify_credentials')
-      console.error(error.value.message)
-      return
-    }
-
-    store(data)
   }
 
   return {

@@ -15,7 +15,7 @@ const route = useRoute()
 const state = ref(route.query.state)
 const code = ref(route.query.code)
 
-const { credentials, authorization, hasExpired } = storeToRefs(useSpotifyAuth())
+const { credentials, authorization } = storeToRefs(useSpotifyAuth())
 const { data, handleRequest } = useAPIRequest<{ url: string }>({
   endpoint: '/spotify/login',
 })
@@ -41,7 +41,7 @@ watch(
 watch(
   [state, code],
   async ([state, code]: any) => {
-    if ((!credentials.value || hasExpired.value) && state && code) {
+    if (state && code) {
       const { error, handleRequest } = useAPIRequest<ISpotifyCredentials>({
         endpoint: '/spotify/access-token',
         method: 'POST',
@@ -52,7 +52,7 @@ watch(
       } else {
         console.error(error)
       }
-    } else if ((!credentials.value || hasExpired.value) && !state && !code) {
+    } else if (!credentials.value && !state && !code) {
       handleRequest()
     }
 
@@ -73,6 +73,8 @@ async function createRoom() {
       token: {
         type: 'SPOTIFY',
         authorization: authorization.value,
+        expiresAt: credentials.value?.expires_at,
+        refreshToken: credentials.value?.refresh_token,
       },
     },
   })
