@@ -52,7 +52,7 @@ watch(
       } else {
         console.error(error)
       }
-    } else if (!credentials.value && !state && !code) {
+    } else if ( !state && !code) {
       handleRequest()
     }
 
