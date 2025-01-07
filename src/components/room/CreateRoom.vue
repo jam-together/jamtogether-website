@@ -12,62 +12,75 @@ import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 
-const state = ref(route.query.state);
-const code = ref(route.query.code);
+const state = ref(route.query.state)
+const code = ref(route.query.code)
 
-const {credentials, authorization, hasExpired} = storeToRefs(useSpotifyAuth());
+const { credentials, authorization, hasExpired } = storeToRefs(useSpotifyAuth())
 const { data, handleRequest } = useAPIRequest<{ url: string }>({
   endpoint: '/spotify/login',
 })
 
-watch(data, value => {
-  if (value?.url) {
-    window.location.href = value.url
-  }
-}, { immediate: true });
+watch(
+  data,
+  (value) => {
+    if (value?.url) {
+      window.location.href = value.url
+    }
+  },
+  { immediate: true },
+)
 
-watch(credentials, async () => {
-  await createRoom();
-}, {immediate: true});
+watch(
+  credentials,
+  async () => {
+    await createRoom()
+  },
+  { immediate: true },
+)
 
 watch(
   [state, code],
   async ([state, code]: any) => {
-    console.log(state, code);
     if ((!credentials.value || hasExpired.value) && state && code) {
-      const {error, handleRequest} = useAPIRequest<ISpotifyCredentials>({ endpoint: "/spotify/access-token", method: "POST" });
-      const response = await handleRequest({ body: { code } });
-      if(!error.value) {
-        useSpotifyAuth().store(response);
+      const { error, handleRequest } = useAPIRequest<ISpotifyCredentials>({
+        endpoint: '/spotify/access-token',
+        method: 'POST',
+      })
+      const response = await handleRequest({ body: { code } })
+      if (!error.value) {
+        useSpotifyAuth().store(response)
       } else {
-        console.error(error);
+        console.error(error)
       }
-      createRoom();
-    } else if((!credentials.value || hasExpired.value) && !state && !code) {
-      handleRequest();
+    } else if ((!credentials.value || hasExpired.value) && !state && !code) {
+      handleRequest()
+    }
+
+    if (state && code) {
+      createRoom()
     }
   },
   { immediate: true },
 )
 
 async function createRoom() {
-  if(!hasExpired.value) {
-    const {handleRequest, error} = useAPIRequest({
-      endpoint: "/rooms/create",
-      method: "POST"
-    });
-    const data = await handleRequest({
-      body: {
-        token: {
-          type: 'SPOTIFY',
-          authorization: authorization.value
-        }
-      }
-    });
+  const { handleRequest, error } = useAPIRequest({
+    endpoint: '/rooms/create',
+    method: 'POST',
+  })
+  const data = await handleRequest({
+    body: {
+      token: {
+        type: 'SPOTIFY',
+        authorization: authorization.value,
+      },
+    },
+  })
 
-    if(!error.value) {
-      location.href = data.redirectURI+"?client-id="+data.clientId;
-    }
+  if (!error.value) {
+    location.href = data.redirectURI + '?client-id=' + data.clientId
+  } else {
+    window.location.reload()
   }
 }
 </script>

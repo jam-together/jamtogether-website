@@ -1,17 +1,25 @@
 <template>
-  <template v-if="isLoading && !error">
+  <template v-if="isLoading">
     <loading-spinner />
   </template>
   <template v-else-if="!isLoading && error">
     <div class="error">
       <h2>Une erreur est survenue..</h2>
-      <h3>{{error}}</h3>
+      <h3>{{ error }}</h3>
     </div>
   </template>
-  <template v-else-if="room">
+  <template v-else-if="!isLoading && room">
     <div class="wrapper">
       <header>
-        <h3 class="room-id">CODE <span>{{ room.id }}</span></h3>
+        <!--<button class="icon members" />-->
+
+        <button @click="disconnect" class="disconnect icon">Quitter le salon</button>
+        <h3 class="room-id">
+          CODE <span>{{ room.id }}</span>
+        </h3>
+        <h4 v-show="room.player?.deviceName" class="connected-to">
+          Connecté à {{ room.player?.deviceName }}
+        </h4>
 
         <div ref="searchbarRef" class="search-field">
           <div @click="isSearchbarOpened = true" class="search-area">
@@ -19,13 +27,13 @@
             <span class="icon search-icon" />
           </div>
 
-          <ul :class="{'active': isSearchbarOpened}" class="search-results">
+          <ul :class="{ active: isSearchbarOpened }" class="search-results">
             <template v-if="!searchLoading">
               <li @click="() => requestSong(item)" v-for="item in searchItems" :key="item.id">
                 <img :alt="item.name" :src="item.image" />
                 <div>
                   <span class="title">{{ item.name }}</span>
-                  <span class="artists">{{ item.artists.join(",") }}</span>
+                  <span class="artists">{{ item.artists.join(',') }}</span>
                 </div>
               </li>
             </template>
@@ -40,15 +48,18 @@
         <header>
           <h3>Son joué actuellement</h3>
           <h4 v-if="room.currentPlaying">
-            {{ room.currentPlaying.name }} • <span>{{ room.currentPlaying.artists.join(", ") }}</span>
+            {{ room.currentPlaying.name }} •
+            <span>{{ room.currentPlaying.artists.join(', ') }}</span>
           </h4>
-          <h4 v-else>
-            Aucun son joué actuellement
-          </h4>
+          <h4 v-else>Aucun son joué actuellement</h4>
         </header>
         <footer>
           <button @click="useRoomSkipPrevious().request(roomId)" class="icon previous" />
-          <button @click="togglePlay(roomId)" class="icon" :class="{'pause': isMusicPlayed, 'play': !isMusicPlayed}" />
+          <button
+            @click="togglePlay(roomId)"
+            class="icon"
+            :class="{ pause: isMusicPlayed, play: !isMusicPlayed }"
+          />
           <button @click="useRoomSkipNext().request(roomId)" class="icon next" />
         </footer>
       </div>
@@ -59,7 +70,7 @@
           <li v-for="track in room.queue" :key="track.id">
             <img :src="track.image" :alt="track.name" />
             <div>
-              {{ track.name }} - <span>{{ track.artists.join(", ")}}</span>
+              {{ track.name }} - <span>{{ track.artists.join(', ') }}</span>
             </div>
           </li>
         </ul>
@@ -70,12 +81,12 @@
 
 <script setup lang="ts">
 import useAPIRequest from '@/composables/useAPIRequest.ts'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useWebsocketStore } from '@/stores/websocket.ts'
-import { type IRoom, type ITrack, RoomEvents } from '@/utils/types.ts'
+import { type IRoom, type ITrack, type RoomEvents } from '@/utils/types.ts'
 import useRoomMusicSearch from '@/composables/room/useRoomMusicSearch.ts'
 import { debunce, triggerWhenFound } from '@/utils/globalUtils.ts'
 import useRoomSongRequest from '@/composables/room/useRoomSongRequest.ts'
@@ -85,118 +96,154 @@ import useRoomSkipPrevious from '@/composables/room/useRoomSkipPrevious.ts'
 import { storeToRefs } from 'pinia'
 import useRoomMusicPlayToggle from '@/composables/room/useRoomMusicPlayToggle.ts'
 
-const route = useRoute();
-const roomId = ref<string>(route.params.id as string);
-const clientId = ref<string>(route.query['client-id'] as string);
+const route = useRoute()
+const router = useRouter()
 
-const {websocket} = storeToRefs(useWebsocketStore());
-const {isLoading, data, error} = useAPIRequest<{ room: IRoom }>({
-  endpoint: "/rooms/get/" + roomId.value,
-  immediate: true
-});
+const roomId = ref<string>(route.params.id as string)
+const clientId = ref<string>(route.query['client-id'] as string)
+
+const { websocket } = storeToRefs(useWebsocketStore())
+const { isLoading, data, error } = useAPIRequest<{ generatedClientId: string; room: IRoom }>({
+  endpoint: '/rooms/get/' + roomId.value,
+  immediate: true,
+})
+
+const generatedClientId = computed(() => {
+  return data.value?.generatedClientId
+})
 const room = computed({
   get: () => data.value?.room ?? null,
-  set: value => {
-    if(!data.value) return;
-    data.value.room = {...data.value.room, ...value};
-  }
-});
+  set: (value) => {
+    if (!data.value) return
+    data.value.room = { ...data.value.room, ...value }
+  },
+})
 
-const {isLoading: searchLoading, items: searchItems, search: handleSearch, reset: resetSearch} = useRoomMusicSearch();
-const searchQuery = ref("");
-const searchbarRef = ref(null);
+const {
+  isLoading: searchLoading,
+  items: searchItems,
+  search: handleSearch,
+  reset: resetSearch,
+} = useRoomMusicSearch()
+const searchQuery = ref('')
+const searchbarRef = ref(null)
 const isSearchbarOpened = computed({
   get: () => {
     return searchLoading.value || searchItems.value.length > 0
   },
   set: (value) => {
-    if(!value) {
-      resetSearch();
+    if (!value) {
+      resetSearch()
     } else {
-      searchQuery.value = searchQuery.value + " ";
+      searchQuery.value = searchQuery.value + ' '
     }
+  },
+})
+
+const { isMusicPlayed, togglePlay, setPlayed } = useRoomMusicPlayToggle()
+
+watch(room, async () => {
+  const value = clientId.value
+  if (value === undefined) {
+    await router.replace({
+      name: 'room',
+      params: {
+        id: roomId.value,
+      },
+      query: {
+        ['client-id']: generatedClientId.value,
+      },
+    })
+  } else {
+    useWebsocketStore().initSocket(value)
   }
-});
-
-const {isMusicPlayed, togglePlay, setPlayed} = useRoomMusicPlayToggle();
-
-watch(clientId, (value) => {
-  if(!value) return;
-  useWebsocketStore().initSocket(value);
-}, {immediate: true});
+})
 watch(searchQuery, (query) => {
   debunce(async (q) => {
-    await handleSearch(roomId.value, q);
-  }, 300)(query);
-});
-watch(room, value => {
-  if(value) {
-    setPlayed(value.isPlaying);
+    await handleSearch(roomId.value, q)
+  }, 300)(query)
+})
+watch(room, (value) => {
+  if (value) {
+    setPlayed(value.player?.isPlaying ?? false)
   }
 })
 
 /* FUNCTIONS */
 function clearSearch() {
-  resetSearch();
-  searchQuery.value = "";
+  resetSearch()
+  searchQuery.value = ''
 }
 
 function clickingOutsideSearchbar(event: Event) {
   triggerWhenFound(event.target as HTMLElement, searchbarRef.value!, (isFound: boolean) => {
-    if(!isFound) {
-      isSearchbarOpened.value = false;
+    if (!isFound) {
+      isSearchbarOpened.value = false
     }
-  });
+  })
 }
 
 async function requestSong(item: ITrack) {
-  clearSearch();
-  await useRoomSongRequest().request(roomId.value, item);
+  clearSearch()
+  await useRoomSongRequest().request(roomId.value, item)
+}
+
+async function disconnect() {
+  await router.push({ name: 'home' })
+  useWebsocketStore().close()
 }
 /* END FUNCTIONS */
 
 /* WS EVENTS */
-watch(websocket, ws => {
-  if(!ws) return;
-  ws.onmessage = (event: MessageEvent) => {
-    const data = event.data;
-    if(!data) return;
+watch(
+  websocket,
+  (ws) => {
+    if (!ws) return
+    ws.onmessage = (event: MessageEvent) => {
+      const data = event.data
+      if (!data) return
 
-    const m: RoomEvents.IncomingMessage = JSON.parse(data);
-    if(m.type === "MUSIC_ADDED" || m.type === "MUSIC_REMOVED") {
-      const message = m as RoomEvents.IncomingMessage<RoomEvents.Music.Added|RoomEvents.Music.Removed>;
-      const track = message.data?.track;
-      if(!track || !room.value) return;
-      room.value.queue = [track, ...room.value.queue];
-    } else if(m.type === "MUSIC_PAUSED") {
-      setPlayed(true);
-    } else if(m.type === "MUSIC_PLAYED") {
-      setPlayed(false);
+      const m: RoomEvents.IncomingMessage = JSON.parse(data)
+      if (m.type === 'MUSIC_ADDED' || m.type === 'MUSIC_REMOVED') {
+        const message = m as RoomEvents.IncomingMessage<
+          RoomEvents.Music.Added | RoomEvents.Music.Removed
+        >
+        const track = message.data?.track
+        if (!track || !room.value) return
+        room.value.queue = [track, ...room.value.queue]
+      } else if (m.type === 'MUSIC_PAUSED') {
+        setPlayed(false)
+      } else if (m.type === 'MUSIC_PLAYED') {
+        setPlayed(true)
+      }
+
+      if (m.type === 'MUSIC_PAUSED' || m.type === 'MUSIC_PLAYED' || m.type === 'MUSIC_SWITCHED') {
+        const message = m as RoomEvents.IncomingMessage<
+          RoomEvents.Music.Paused | RoomEvents.Music.Played | RoomEvents.Music.Switched
+        >
+        const newTrack = message.data?.newTrack
+        const queue = message.data?.newQueue
+
+        if (!newTrack || !queue || !room.value) return
+        room.value.currentPlaying = newTrack
+        room.value.queue = queue
+      }
     }
-
-    if(m.type === "MUSIC_PAUSED" || m.type === "MUSIC_PLAYED" || m.type === "MUSIC_SWITCHED") {
-      const message = m as RoomEvents.IncomingMessage<RoomEvents.Music.Paused|RoomEvents.Music.Played|RoomEvents.Music.Switched>;
-      const newTrack = message.data?.newTrack;
-      const queue = message.data?.newQueue;
-
-      if(!newTrack || !queue || !room.value) return;
-      room.value.currentPlaying = newTrack;
-      room.value.queue = queue;
-    }
-  }
-}, { immediate: true });
+  },
+  { immediate: true },
+)
 /* END WS EVENTS */
 
 /* HOOKS */
 onMounted(() => {
-  useSpotifyAuth();
-  window.addEventListener("click", clickingOutsideSearchbar);
-});
+  useSpotifyAuth()
+  window.addEventListener('click', clickingOutsideSearchbar)
+})
 onBeforeUnmount(() => {
-  window.removeEventListener("click", clickingOutsideSearchbar);
-});
+  window.removeEventListener('click', clickingOutsideSearchbar)
+})
 </script>
 
 <style lang="scss" scoped>
-@import "@/scss/components/client-room";
+@import '@/scss/components/client-room';
 </style>

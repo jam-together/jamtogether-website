@@ -12,7 +12,12 @@ export interface IRoom {
   queue: Array<ITrack>;
   members: Array<IRoomMember>;
   currentPlaying: ITrack;
+  player: IPlayer;
+}
+
+export interface IPlayer {
   isPlaying: boolean;
+  deviceName: string;
 }
 
 export interface IRoomMember {

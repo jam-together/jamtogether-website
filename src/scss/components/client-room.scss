@@ -4,14 +4,57 @@ div.error {
 }
 
 div.wrapper {
-  //width: 30em;
-  margin: 2em 2em;
+  margin: 6em 2em 2em;
 }
 
 div.wrapper>header {
   margin-bottom: 1em;
   padding-bottom: 1em;
   border-bottom: 1px solid $gray-1;
+
+  &>button.disconnect {
+    //background-color: $red;
+    //border-color: $red;
+    //color: $white;
+
+    color: $red;
+    border-color: transparent;
+
+    //border-radius: 0 0 0 10px;
+
+    position: absolute;
+    top: 15px;
+    right: 20px;
+
+    font-size: 1.2em;
+    padding-right: 2.5em;
+
+    &:hover {
+      background-color: $red-200;
+      border-color: $red-200;
+      color: $black;
+    }
+
+    &.icon::before {
+      @include icon("exit-to-app");
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  &>button.members {
+    border: unset;
+    position: absolute;
+    top: 5px;
+    left: 20px;
+
+    &::before {
+      position: unset;
+      font-size: 3em;
+      @include icon("account-group");
+    }
+  }
 
   &>h3.room-id {
     text-align: center;

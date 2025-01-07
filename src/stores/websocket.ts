@@ -18,12 +18,17 @@ export const useWebsocketStore = defineStore('websocket', () => {
     }
   });
 
+  const close = () => {
+    websocket.value?.close();
+  }
+
   const _log = (message: string) => {
     console.log(`[Websocket] ${identityId.value}: ${message}`)
   }
 
   return {
     initSocket,
+    close,
     websocket
   }
 

@@ -4,10 +4,8 @@
     <h2>Le pouvoir de la musique, entre toutes les mains.</h2>
 
     <div class="choose">
-      <router-link :to="{name: 'create-room'}">
-        <button class="primary">
-          Créer un salon
-        </button>
+      <router-link :to="{ name: 'create-room' }">
+        <button class="primary">Créer un salon</button>
       </router-link>
 
       <span class="or">
@@ -16,17 +14,8 @@
       </span>
 
       <div class="join-room">
-        <input v-model="roomId" type="text" placeholder="Code du salon (ex: R-A8R2D6P0N9R2)" />
-        <template v-if="!!roomId.trim()">
-          <router-link :to="{name: 'room', params: {id: roomId}}">
-            <button :disabled="!roomId.trim()" class="primary icon">
-            </button>
-          </router-link>
-        </template>
-        <template v-else>
-          <button class="primary icon" disabled>
-          </button>
-        </template>
+        <input v-model="roomId" type="text" placeholder="Code du salon (ex: A8R2D6)" />
+        <button @click="joinRoom" class="primary icon" :disabled="!roomId.trim()" />
       </div>
     </div>
   </div>
@@ -34,10 +23,22 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const roomId = ref<string>("");
+const roomId = ref<string>('')
+const router = useRouter()
+
+const joinRoom = async () => {
+  if (!roomId.value.trim()) {
+    return
+  }
+  await router.push({
+    name: 'room',
+    params: { id: roomId.value },
+  })
+}
 </script>
 
 <style scoped>
-@import "@/scss/components/welcome-home.scss";
+@import '@/scss/components/welcome-home.scss';
 </style>

@@ -21,7 +21,7 @@ export const useSpotifyAuth = defineStore('spotifyAuth', () => {
 
   const hasExpired = computed<boolean>(() => {
     if (!credentials.value) return true
-    return Date.now() > credentials.value.expires_at;
+    return Date.now() > credentials.value.expires_at
   })
 
   const authorization = computed(() => {
@@ -61,12 +61,12 @@ export const useSpotifyAuth = defineStore('spotifyAuth', () => {
     })
 
     if (error.value) {
-      localStorage.removeItem('spotify_credentials');
-      console.error(error.value.message);
-      return;
+      localStorage.removeItem('spotify_credentials')
+      console.error(error.value.message)
+      return
     }
 
-    store(data);
+    store(data)
   }
 
   return {
