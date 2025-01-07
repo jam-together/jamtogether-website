@@ -81,8 +81,8 @@ async function createRoom() {
 
   if (!error.value) {
     location.href = data.redirectURI + '?client-id=' + data.clientId
-  } else {
-    window.location.reload()
   }
 }
+
+onMounted(() => handleRequest());
 </script>
