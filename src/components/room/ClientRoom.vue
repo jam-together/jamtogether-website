@@ -80,37 +80,34 @@
 </template>
 
 <script setup lang="ts">
-import useAPIRequest from '@/composables/useAPIRequest.ts'
+import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
+import useAPIRequest from '@/composables/useAPIRequest.ts'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useWebsocketStore } from '@/stores/websocket.ts'
 import { type IRoom, type ITrack, type RoomEvents } from '@/utils/types.ts'
 import useRoomMusicSearch from '@/composables/room/useRoomMusicSearch.ts'
 import { debunce, triggerWhenFound } from '@/utils/globalUtils.ts'
 import useRoomSongRequest from '@/composables/room/useRoomSongRequest.ts'
-import { useSpotifyAuth } from '@/stores/spotifyAuth.ts'
 import useRoomSkipNext from '@/composables/room/useRoomSkipNext.ts'
 import useRoomSkipPrevious from '@/composables/room/useRoomSkipPrevious.ts'
-import { storeToRefs } from 'pinia'
 import useRoomMusicPlayToggle from '@/composables/room/useRoomMusicPlayToggle.ts'
+import { useAuthenticationStore } from '@/stores/authentication'
 
 const route = useRoute()
 const router = useRouter()
 
 const roomId = ref<string>(route.params.id as string)
-const clientId = ref<string>(route.query['client-id'] as string)
 
 const { websocket } = storeToRefs(useWebsocketStore())
-const { isLoading, data, error } = useAPIRequest<{ generatedClientId: string; room: IRoom }>({
+const { me } = storeToRefs(useAuthenticationStore())
+const { isLoading, data, error } = useAPIRequest<{ accessToken: string; room: IRoom }>({
   endpoint: '/rooms/get/' + roomId.value,
   immediate: true,
 })
 
-const generatedClientId = computed(() => {
-  return data.value?.generatedClientId
-})
 const room = computed({
   get: () => data.value?.room ?? null,
   set: (value) => {
@@ -142,21 +139,20 @@ const isSearchbarOpened = computed({
 
 const { isMusicPlayed, togglePlay, setPlayed } = useRoomMusicPlayToggle()
 
-watch(room, async () => {
-  const value = clientId.value
-  if (value === undefined) {
-    await router.replace({
-      name: 'room',
-      params: {
-        id: roomId.value,
-      },
-      query: {
-        ['client-id']: generatedClientId.value,
-      },
-    })
-  } else {
-    useWebsocketStore().initSocket(value)
+watch(data, async (value) => {
+  if (value) {
+    useAuthenticationStore().store(value.accessToken)
   }
+  if (me.value) {
+    useWebsocketStore().initSocket(me.value.clientId)
+  }
+
+  await router.replace({
+    name: 'room',
+    params: {
+      id: roomId.value,
+    },
+  })
 })
 watch(searchQuery, (query) => {
   debunce(async (q) => {
@@ -191,6 +187,7 @@ async function requestSong(item: ITrack) {
 async function disconnect() {
   await router.push({ name: 'home' })
   useWebsocketStore().close()
+  useAuthenticationStore().reset()
 }
 /* END FUNCTIONS */
 
@@ -215,6 +212,8 @@ watch(
         setPlayed(false)
       } else if (m.type === 'MUSIC_PLAYED') {
         setPlayed(true)
+      } else if (m.type === 'DISCONNECTED') {
+        disconnect()
       }
 
       if (m.type === 'MUSIC_PAUSED' || m.type === 'MUSIC_PLAYED' || m.type === 'MUSIC_SWITCHED') {
@@ -236,7 +235,6 @@ watch(
 
 /* HOOKS */
 onMounted(() => {
-  useSpotifyAuth()
   window.addEventListener('click', clickingOutsideSearchbar)
 })
 onBeforeUnmount(() => {

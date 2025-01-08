@@ -1,3 +1,5 @@
+import { useAuthenticationStore } from '@/stores/authentication'
+import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 
 type TMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
@@ -13,7 +15,7 @@ interface IRequestParams {
   endpoint?: string
 }
 
-export default function useAPIRequest<T = {}>({
+export default function useAPIRequest<T>({
   immediate = false,
   method = 'GET',
   endpoint = '/',
@@ -21,6 +23,7 @@ export default function useAPIRequest<T = {}>({
   const isLoading = ref<boolean>(false)
   const data = ref<T | null>(null)
   const error = ref<Error | null>(null)
+  const { authorization } = storeToRefs(useAuthenticationStore())
 
   function _buildURL(endpoint: string) {
     let url = ''
@@ -37,7 +40,10 @@ export default function useAPIRequest<T = {}>({
     error.value = null
   }
 
-  async function handleRequest({ body, endpoint: overloadedEndpoint }: IRequestParams = {}) {
+  async function handleRequest({
+    body,
+    endpoint: overloadedEndpoint,
+  }: IRequestParams = {}): Promise<T | null> {
     try {
       isLoading.value = true
       if (!overloadedEndpoint && !endpoint) {
@@ -47,6 +53,7 @@ export default function useAPIRequest<T = {}>({
         method,
         headers: {
           ...(body && { 'content-type': 'application/json' }),
+          ...(authorization.value && { authorization: authorization.value }),
         },
         ...(body && {
           body: JSON.stringify(body),
@@ -64,6 +71,7 @@ export default function useAPIRequest<T = {}>({
     } finally {
       isLoading.value = false
     }
+    return null
   }
 
   onMounted(async () => {
