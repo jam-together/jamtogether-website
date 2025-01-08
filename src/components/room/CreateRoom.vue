@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import useAPIRequest from '@/composables/useAPIRequest.ts'
-import { ref, watch } from 'vue'
+import { ref, watch, type Ref } from 'vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useRoute } from 'vue-router'
 import { type ISpotifyCredentials, useSpotifyAuth } from '@/stores/spotifyAuth.ts'
@@ -12,16 +12,16 @@ import { storeToRefs } from 'pinia'
 
 const route = useRoute()
 
-const state = ref(route.query.state)
-const code = ref(route.query.code)
+const state = ref(route.query.state as string)
+const code = ref(route.query.code as string)
 
 const { credentials, authorization } = storeToRefs(useSpotifyAuth())
-const { data, handleRequest } = useAPIRequest<{ url: string }>({
+const { data: loginData, handleRequest: handleLoginRequest } = useAPIRequest<{ url: string }>({
   endpoint: '/spotify/login',
 })
 
 watch(
-  data,
+  loginData,
   (value) => {
     if (value?.url) {
       window.location.href = value.url
@@ -31,17 +31,11 @@ watch(
 )
 
 watch(
-  credentials,
-  async () => {
-    await createRoom()
-  },
-  { immediate: true },
-)
-
-watch(
   [state, code],
-  async ([state, code]: any) => {
-    if (state && code) {
+  async ([state, code]: [Ref<string>, Ref<string>]) => {
+    if (!state && !code) {
+      handleLoginRequest()
+    } else if (state && code) {
       const { error, handleRequest } = useAPIRequest<ISpotifyCredentials>({
         endpoint: '/spotify/access-token',
         method: 'POST',
@@ -49,22 +43,17 @@ watch(
       const response = await handleRequest({ body: { code } })
       if (!error.value) {
         useSpotifyAuth().store(response)
+        await createRoom()
       } else {
         console.error(error)
       }
-    } else if (!credentials.value && !state && !code) {
-      handleRequest()
-    }
-
-    if (state && code) {
-      createRoom()
     }
   },
   { immediate: true },
 )
 
 async function createRoom() {
-  const { handleRequest, error } = useAPIRequest({
+  const { handleRequest } = useAPIRequest({
     endpoint: '/rooms/create',
     method: 'POST',
   })
@@ -78,11 +67,6 @@ async function createRoom() {
       },
     },
   })
-
-  if (!error.value) {
-    location.href = data.redirectURI + '?client-id=' + data.clientId
-  } else {
-    window.location.reload()
-  }
+  location.href = data.redirectURI + '?client-id=' + data.clientId
 }
 </script>
