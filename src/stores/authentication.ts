@@ -32,9 +32,7 @@ export const useAuthenticationStore = defineStore('authentication', () => {
   }
 
   function store(accessToken: string) {
-    if (!authorization.value) {
-      localStorage.setItem('access_token', accessToken)
-    }
+    localStorage.setItem('access_token', accessToken)
   }
 
   return {
