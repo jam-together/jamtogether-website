@@ -10,9 +10,6 @@ interface IRoomEventsParams {
   }
 }
 
-// TODO: factoriser ça ou trouver un truc sympa à faire
-// TODO: ajouter des notiifcations aussi au passage etc
-
 export default function useRoomEvents() {
   const init = ({ websocket, room, functions }: IRoomEventsParams) => {
     if (!websocket) return
