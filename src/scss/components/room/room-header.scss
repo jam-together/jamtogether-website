@@ -1,0 +1,85 @@
+header {
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+
+  & > button.disconnect {
+    color: $red;
+    border-color: transparent;
+
+    position: absolute;
+    top: 15px;
+    right: 20px;
+
+    font-size: 1.2em;
+    padding-right: 2.5em;
+
+    &:hover {
+      background-color: $red-200;
+      border-color: $red-200;
+      color: $black;
+    }
+
+    &.icon::before {
+      @include icon('exit-to-app');
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  & > div.actions {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & > button {
+      border: unset;
+
+      &::before {
+        position: unset;
+        font-size: 2.5em;
+      }
+    }
+
+    & > button.members::before {
+      @include icon('account-group');
+    }
+    & > button.history::before {
+      @include icon('history');
+    }
+  }
+
+  & > h3.room-id {
+    display: flex;
+    gap: 0.5em;
+    justify-content: center;
+    align-items: center;
+
+    & > span {
+      background-color: $gray-3;
+      padding: 0.2em 0.5em;
+      border-radius: 15px;
+
+      position: relative;
+      padding-right: 2em;
+
+      &.icon.copy::before {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        @include icon('content-copy');
+      }
+    }
+  }
+
+  & > h4.connected-to {
+    color: $primary;
+    text-align: center;
+    margin: 1em 0;
+  }
+}

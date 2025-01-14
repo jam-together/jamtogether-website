@@ -13,6 +13,7 @@ export interface IRoom {
   members: Array<IRoomMember>
   currentPlaying: ITrack
   player: IPlayer
+  history: RoomEvents.IncomingMessage[]
 }
 
 export interface IPlayer {
@@ -26,6 +27,10 @@ export interface IRoomMember {
 }
 
 export declare namespace RoomEvents {
+  interface IHistoryModified {
+    newHistory: RoomEvents.IncomingMessage[]
+  }
+
   namespace Member {
     interface Joined {
       member: IRoomMember
@@ -39,21 +44,26 @@ export declare namespace RoomEvents {
   namespace Music {
     interface Added {
       track: ITrack
+      by?: IRoomMember
     }
     interface Removed {
       track: ITrack
+      by?: IRoomMember
     }
     interface Switched {
       newTrack: ITrack
       newQueue: Array<ITrack>
+      by?: IRoomMember
     }
     interface Played {
       newTrack: ITrack
       newQueue: Array<ITrack>
+      by?: IRoomMember
     }
     interface Paused {
       newTrack: ITrack
       newQueue: Array<ITrack>
+      by?: IRoomMember
     }
 
     type MessageType =
@@ -64,7 +74,12 @@ export declare namespace RoomEvents {
       | 'MUSIC_PAUSED'
   }
 
-  type MessageType = Music.MessageType | Member.MessageType | 'DISCONNECTED'
+  type MessageType =
+    | Music.MessageType
+    | Member.MessageType
+    | 'DISCONNECTED'
+    | 'HISTORY_MODIFIED'
+    | 'NEW_DEVICE'
   interface IncomingMessage<T = {}> {
     date: Date
     type: RoomEvents.MessageType

@@ -1,6 +1,6 @@
 <template>
   <footer>
-    Spotijam version 0.1 | Fait par
+    JamTogether version 0.1 | Fait par
     <a href="https://ballon2zipette.com" target="_blank">Ballon2zipette-corp</a>
   </footer>
 </template>

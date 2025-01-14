@@ -111,6 +111,8 @@ div.error {
     margin: auto;
     margin-top: 0.5em;
 
+    font-size: 1.5em;
+
     color: $primary;
     text-decoration: underline;
   }

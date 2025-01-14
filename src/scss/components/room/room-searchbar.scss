@@ -1,0 +1,76 @@
+div.search-field {
+  position: relative;
+  margin-top: 1.5em;
+
+  & > div.search-area {
+    position: relative;
+    & > span.search-icon::before {
+      @include icon('magnify');
+      font-size: 1.8em;
+
+      position: absolute;
+      color: $gray-2;
+      top: 50%;
+      right: 15px;
+      transform: translateY(-50%);
+    }
+  }
+
+  & > ul.search-results {
+    position: absolute;
+    transform: translateY(10px);
+    display: none;
+
+    &.active {
+      display: block;
+    }
+
+    background-color: $gray-3;
+
+    list-style: none;
+    width: 100%;
+    border-radius: 10px;
+
+    max-height: 19em;
+    overflow: auto;
+
+    z-index: 99;
+
+    & > li {
+      color: $gray-1;
+      font-size: 1.2em;
+
+      display: flex;
+      align-items: center;
+      gap: 1em;
+
+      padding: 0.8em 1em;
+
+      transition: all 0.5s ease;
+
+      &:is(:hover, :focus) {
+        background-color: $black;
+      }
+
+      & > img {
+        border-radius: 10px;
+        width: 3em;
+      }
+
+      & > div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1em;
+
+        & > span.artists {
+          color: $gray-2;
+          font-size: 0.8em;
+        }
+      }
+
+      &:not(:last-of-type) {
+        border-bottom: 1px solid $gray-2;
+      }
+    }
+  }
+}

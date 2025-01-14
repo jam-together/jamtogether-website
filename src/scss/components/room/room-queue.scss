@@ -1,0 +1,38 @@
+div.queue {
+  margin: 1em 0;
+  color: $gray-1;
+
+  & > h4 {
+    border-bottom: 1px solid $gray-2;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+  }
+
+  & > ul {
+    & > li {
+      display: flex;
+      align-items: center;
+      gap: 1em;
+
+      &:not(:last-of-type) {
+        border-bottom: 1px solid $gray-2;
+        padding-bottom: 1em;
+        margin-bottom: 1em;
+      }
+
+      & > img {
+        width: 3em;
+        border-radius: 10px;
+      }
+
+      & > div {
+        font-size: 1.3em;
+        color: $white;
+        & > span {
+          color: $gray-2;
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+}

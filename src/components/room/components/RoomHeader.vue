@@ -1,0 +1,48 @@
+<template>
+  <header>
+    <div class="actions">
+      <button @click="emit('showHistory')" class="icon history" />
+      <button @click="emit('showMembers')" class="icon members" />
+    </div>
+
+    <button @click="() => disconnect()" class="disconnect icon">Quitter le salon</button>
+    <h3 class="room-id">
+      CODE <span class="icon copy" @click="copyToClipboard">{{ room.id }}</span>
+    </h3>
+    <h4 v-show="room.player?.deviceName" class="connected-to">
+      Connecté à {{ room.player?.deviceName }}
+    </h4>
+
+    <room-searchbar :room-id="room.id" />
+  </header>
+</template>
+
+<script lang="ts" setup>
+import RoomSearchbar from './RoomSearchbar.vue'
+
+const props = defineProps({
+  room: {
+    type: Object,
+    required: true,
+  },
+  disconnect: {
+    type: Function,
+    required: true,
+  },
+})
+
+const copyToClipboard = async () => {
+  await navigator.clipboard.writeText(props.room.id)
+  window.room.modal.open({
+    title: 'Bravo',
+    description: 'Code de la salle bien copié',
+    type: 'SUCCESS',
+  })
+}
+
+const emit = defineEmits(['showHistory', 'showMembers'])
+</script>
+
+<style lang="scss">
+@import '@/scss/components/room/room-header.scss';
+</style>

@@ -1,0 +1,74 @@
+div.room-notification {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  background-color: $gray-3;
+  width: 100%;
+  padding: 1em 2em;
+  padding-left: 5em;
+
+  animation: 0.5s notification-open forwards;
+
+  &.close {
+    animation: 0.5s notification-close forwards;
+  }
+
+  & > h3 {
+    font-family: 'poppins-bold', sans-serif;
+  }
+
+  & > h4 {
+    font-family: 'poppins-regular', sans-serif;
+  }
+
+  & > span.close {
+    position: absolute;
+    top: 50%;
+    right: 1em;
+    transform: translateY(-50%);
+
+    font-size: 3em;
+  }
+
+  &.success {
+    background-color: $green;
+
+    &::before {
+      @include icon('check');
+    }
+  }
+  &.error {
+    background-color: $red;
+
+    &::before {
+      @include icon('close-circle');
+    }
+  }
+
+  &::before {
+    position: absolute;
+    top: 50%;
+    left: 0.3em;
+    font-size: 3em;
+
+    transform: translateY(-50%);
+  }
+
+  @keyframes notification-open {
+    from {
+      bottom: -10em;
+    }
+    to {
+      bottom: 0;
+    }
+  }
+  @keyframes notification-close {
+    from {
+      bottom: 0;
+    }
+    to {
+      bottom: -10em;
+    }
+  }
+}

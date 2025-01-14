@@ -1,6 +1,6 @@
-@use "/node_modules/@mdi/font/scss/materialdesignicons.scss" as *;
-@use "sass:map";
+@use '/node_modules/@mdi/font/scss/materialdesignicons.scss' as *;
+@use 'sass:map';
 
 @mixin icon($name) {
-    content: char(map.get($mdi-icons, $name));
+  content: char(map.get($mdi-icons, $name));
 }

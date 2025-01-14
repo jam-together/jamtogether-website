@@ -1,60 +1,70 @@
 div.center {
-  margin: 4em 2em;
+  margin: 4em 0;
 
-  &>h1, &>h2 {
+  & > img {
+    width: 17em;
+    display: block;
+    margin: auto;
+  }
+
+  & > h1,
+  & > h2 {
     text-align: center;
   }
 
-  &>h1 {
+  & > h1 {
     color: $primary;
   }
 
-  &>h2 {
+  & > h2 {
+    font-family: 'poppins-medium', sans-serif;
     margin-bottom: 1em;
   }
 
   a {
     display: block;
-    &>button {
+    & > button {
       width: 100%;
     }
   }
 
-  &>div.choose {
+  & > div.choose {
     margin-top: 1em;
+    margin: 0 2em;
+
     display: flex;
     flex-direction: column;
-    gap: 3em;
+    gap: 2em;
 
-    &>a>button{
+    & > a > button {
       width: 100%;
       font-size: 1.4em;
 
       &.icon.plus-circle::before {
-        @include icon("plus-circle");
+        @include icon('plus-circle');
         top: 50%;
         right: 10px;
         transform: translateY(-50%);
       }
     }
 
-    &>span.or {
+    & > span.or {
       position: relative;
       width: 100%;
       display: block;
 
-      &>span.label {
+      & > span.label {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: $black;
-        padding: 0 .5em;
+        padding: 0 0.5em;
 
         font-size: 1.3em;
-        font-family: "sora-bold", sans-serif;
+        font-family: 'sora-bold', sans-serif;
       }
-      &>span.line {
+      & > span.line {
         width: 100%;
         height: 3px;
         background-color: $gray-1;
@@ -66,17 +76,40 @@ div.center {
       }
     }
 
-    &>div.join-room {
-      display: flex;
-      gap: .5em;
+    & > h3.join-room-label {
+      text-align: center;
+    }
 
-      & button {
-        text-transform: capitalize;
-        &::before {
-          @include icon("arrow-right");
-          position: unset;
-          font-size: 1.8em;
+    & > div.join-room {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+
+      & > div.code-input {
+        display: flex;
+        gap: 0.8em;
+        justify-content: center;
+
+        & > input {
+          width: calc(100% / 6);
+          height: 3.5em;
+
+          text-transform: uppercase;
+          text-align: center;
+
+          font-size: 1.5rem;
+          transition: all 0.5s ease;
+
+          border: 2px solid $gray-3;
+
+          &:is(:focus, :hover) {
+            border-color: $gray-2;
+          }
         }
+      }
+
+      & > button {
+        font-size: 1.4em;
       }
     }
   }

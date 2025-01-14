@@ -6,11 +6,17 @@ import vue from '@vitejs/plugin-vue'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue()
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => ['loading-spinner'].includes(tag),
+        },
+      },
+    }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   css: {
@@ -19,8 +25,8 @@ export default defineConfig({
         additionalData: `
           @use "/src/scss/utils/variables" as *;
           @use "/src/scss/utils/utils" as *;
-        `
-      }
-    }
-  }
+        `,
+      },
+    },
+  },
 })

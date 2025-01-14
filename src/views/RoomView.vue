@@ -1,7 +1,7 @@
 <template>
-  <client-room />
+  <user-room />
 </template>
 
 <script setup lang="ts">
-import ClientRoom from '@/components/room/ClientRoom.vue'
+import UserRoom from '@/components/room/UserRoom.vue'
 </script>

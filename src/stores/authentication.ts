@@ -16,29 +16,35 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     return accessToken.value ? `Bearer ${accessToken.value}` : null
   })
 
-  const me = computed<IMe | null>(() => {
+  const me = computed<IMe | null>(() => unserialize(accessToken.value!))
+
+  const unserialize = (token: string): IMe | null => {
     try {
-      const decoded = jwtDecode(accessToken.value!)
+      const decoded = jwtDecode(token)
       return decoded as IMe
     } catch (e) {
       console.error(e)
       reset()
     }
     return null
-  })
+  }
 
-  function reset(): void {
+  const reset = (): void => {
     localStorage.removeItem('access_token')
   }
 
-  function store(accessToken: string) {
-    localStorage.setItem('access_token', accessToken)
+  const store = (accessToken: string): void => {
+    const decoded = unserialize(accessToken)
+    if (!decoded || !me.value || (decoded && me.value && decoded!.roomId !== me.value?.roomId)) {
+      localStorage.setItem('access_token', accessToken)
+    }
   }
 
   return {
     store,
     authorization,
     reset,
+    unserialize,
     me,
   }
 })
