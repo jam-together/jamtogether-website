@@ -18,9 +18,10 @@ export default function useRoomEvents() {
         const message = m as RoomEvents.IncomingMessage<
           RoomEvents.Music.Added | RoomEvents.Music.Removed
         >
-        const track = message.data?.track
-        if (!track || !room.value) return
-        room.value.queue = [track, ...room.value.queue]
+        const newQueue = message.data?.newQueue
+        if (!newQueue || !room.value) return
+
+        room.value.queue = newQueue
       } else if (m.type === 'MUSIC_PAUSED') {
         useConnectedRoom().setPlayed(false)
       } else if (m.type === 'MUSIC_PLAYED') {
@@ -71,11 +72,11 @@ export default function useRoomEvents() {
       if (!member?.displayName) return ''
       return `${member.displayName} a ${message === 'MEMBER_JOINED' ? 'rejoint' : 'quitté'} le salon`
     } else if (message === 'MUSIC_ADDED' || message === 'MUSIC_REMOVED') {
-      const { track, by } = data as RoomEvents.Music.Removed | RoomEvents.Music.Added
+      const { newTrack, by } = data as RoomEvents.Music.Removed | RoomEvents.Music.Added
       if (!by?.displayName) return ''
       return (
         `${by?.displayName} a ${message === 'MUSIC_ADDED' ? 'ajouté' : 'retiré'} la musique: ` +
-        track.name
+        newTrack.name
       )
     } else if (message === 'MUSIC_SWITCHED') {
       const { newTrack, by } = data as RoomEvents.Music.Switched

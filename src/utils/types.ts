@@ -48,11 +48,13 @@ export declare namespace RoomEvents {
   }
   namespace Music {
     interface Added {
-      track: ITrack
+      newTrack: ITrack
+      newQueue: Array<ITrack>
       by?: IRoomMember
     }
     interface Removed {
-      track: ITrack
+      newTrack: ITrack
+      newQueue: Array<ITrack>
       by?: IRoomMember
     }
     interface Switched {
