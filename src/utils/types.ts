@@ -32,6 +32,10 @@ export declare namespace RoomEvents {
     newHistory: RoomEvents.IncomingMessage[]
   }
 
+  interface INewDevice {
+    deviceName: string
+  }
+
   namespace Member {
     interface Joined {
       member: IRoomMember

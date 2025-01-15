@@ -20,7 +20,7 @@ export default function useRoomEvents() {
         >
         const track = message.data?.track
         if (!track || !room.value) return
-        room.value.queue = [...room.value.queue, track]
+        room.value.queue = [track, ...room.value.queue]
       } else if (m.type === 'MUSIC_PAUSED') {
         useConnectedRoom().setPlayed(false)
       } else if (m.type === 'MUSIC_PLAYED') {
@@ -37,6 +37,9 @@ export default function useRoomEvents() {
         } else {
           room.value.members[memberIndex] = member
         }
+      } else if (m.type === 'NEW_DEVICE') {
+        const { deviceName } = m.data as RoomEvents.INewDevice
+        room.value.player.deviceName = deviceName
       }
 
       if (m.type === 'MUSIC_PAUSED' || m.type === 'MUSIC_PLAYED' || m.type === 'MUSIC_SWITCHED') {
@@ -61,20 +64,26 @@ export default function useRoomEvents() {
   }
 
   const getMessageType = (message: RoomEvents.MessageType, data: unknown): string => {
+    if (!data) return ''
+
     if (message === 'MEMBER_JOINED' || message === 'MEMBER_LEAVED') {
       const { member } = data as RoomEvents.Member.Joined | RoomEvents.Member.Leaved
+      if (!member?.displayName) return ''
       return `${member.displayName} a ${message === 'MEMBER_JOINED' ? 'rejoint' : 'quitté'} le salon`
     } else if (message === 'MUSIC_ADDED' || message === 'MUSIC_REMOVED') {
       const { track, by } = data as RoomEvents.Music.Removed | RoomEvents.Music.Added
+      if (!by?.displayName) return ''
       return (
         `${by?.displayName} a ${message === 'MUSIC_ADDED' ? 'ajouté' : 'retiré'} la musique: ` +
         track.name
       )
     } else if (message === 'MUSIC_SWITCHED') {
       const { newTrack, by } = data as RoomEvents.Music.Switched
+      if (!by?.displayName) return ''
       return `${by?.displayName} a changé la musique par ` + newTrack.name
     } else if (message === 'MUSIC_PAUSED' || message === 'MUSIC_PLAYED') {
       const { by } = data as RoomEvents.Music.Paused | RoomEvents.Music.Played
+      if (!by?.displayName) return ''
       return (
         by?.displayName +
         ' a ' +
