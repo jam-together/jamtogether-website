@@ -1,13 +1,10 @@
 import useAPIRequest from '@/composables/useAPIRequest.ts'
-import { ref } from 'vue'
+import useConnectedRoom from '@/stores/connectedRoom'
+import { storeToRefs } from 'pinia'
 
 export default function useRoomMusicPlayToggle() {
-  const isMusicPlayed = ref(true)
+  const { isMusicPlayed } = storeToRefs(useConnectedRoom())
   const { handleRequest, error } = useAPIRequest({ method: 'POST' })
-
-  const setPlayed = (played: boolean): void => {
-    isMusicPlayed.value = played
-  }
 
   const togglePlay = async (roomId: string) => {
     try {
@@ -22,8 +19,9 @@ export default function useRoomMusicPlayToggle() {
       window.room.modal.open({
         type: 'SUCCESS',
         title: 'Bravo!',
-        description: isMusicPlayed.value ? 'Musique reprise !' : 'Musique mit en pause',
+        description: !isMusicPlayed.value ? 'Musique reprise !' : 'Musique mit en pause',
       })
+      useConnectedRoom().setPlayed(!isMusicPlayed.value)
     } catch (e) {
       const error = e as Error
       window.room.modal.open({
@@ -35,8 +33,6 @@ export default function useRoomMusicPlayToggle() {
   }
 
   return {
-    isMusicPlayed,
     togglePlay,
-    setPlayed,
   }
 }

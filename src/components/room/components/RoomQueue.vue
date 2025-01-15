@@ -13,12 +13,10 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
-  room: {
-    type: Object,
-    required: true,
-  },
-})
+import useConnectedRoom from '@/stores/connectedRoom'
+import { storeToRefs } from 'pinia'
+
+const { room } = storeToRefs(useConnectedRoom())
 </script>
 
 <style lang="scss" scoped>

@@ -16,7 +16,10 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     return accessToken.value ? `Bearer ${accessToken.value}` : null
   })
 
-  const me = computed<IMe | null>(() => unserialize(accessToken.value!))
+  const me = computed<IMe | null>(() => {
+    if (!accessToken.value) return null
+    return unserialize(accessToken.value!)
+  })
 
   const unserialize = (token: string): IMe | null => {
     try {

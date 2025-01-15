@@ -24,6 +24,7 @@ export interface IPlayer {
 export interface IRoomMember {
   id: string
   displayName: string
+  isConnected: boolean
 }
 
 export declare namespace RoomEvents {

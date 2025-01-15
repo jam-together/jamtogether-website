@@ -1,23 +1,19 @@
-import type { RoomEvents } from '@/utils/types'
-import { type ComputedRef } from 'vue'
-
-interface IRoomEventsParams {
-  websocket: WebSocket
-  room: ComputedRef
-  functions: {
-    disconnect: () => Promise<void>
-    setPlayed: (played: boolean) => void
-  }
-}
+import useConnectedRoom from '@/stores/connectedRoom'
+import { useWebsocketStore } from '@/stores/websocket'
+import type { IRoom, RoomEvents } from '@/utils/types'
+import { storeToRefs } from 'pinia'
 
 export default function useRoomEvents() {
-  const init = ({ websocket, room, functions }: IRoomEventsParams) => {
+  const { websocket } = storeToRefs(useWebsocketStore())
+  const { room } = storeToRefs(useConnectedRoom())
+  const init = () => {
     if (!websocket) return
-    websocket.onmessage = (event: MessageEvent) => {
+    websocket.value!.onmessage = (event: MessageEvent) => {
       const data = event.data
       if (!data) return
 
       const m: RoomEvents.IncomingMessage = JSON.parse(data)
+
       if (m.type === 'MUSIC_ADDED' || m.type === 'MUSIC_REMOVED') {
         const message = m as RoomEvents.IncomingMessage<
           RoomEvents.Music.Added | RoomEvents.Music.Removed
@@ -26,14 +22,21 @@ export default function useRoomEvents() {
         if (!track || !room.value) return
         room.value.queue = [...room.value.queue, track]
       } else if (m.type === 'MUSIC_PAUSED') {
-        functions.setPlayed(false)
+        useConnectedRoom().setPlayed(false)
       } else if (m.type === 'MUSIC_PLAYED') {
-        functions.setPlayed(true)
-      } else if (m.type === 'DISCONNECTED') {
-        functions.disconnect()
-      } else if (m.type === 'HISTORY_MODIFIED') {
+        useConnectedRoom().setPlayed(true)
+      }
+      if (m.type === 'HISTORY_MODIFIED') {
         const message = m as RoomEvents.IncomingMessage<RoomEvents.IHistoryModified>
-        room.value.history = message.data?.newHistory
+        room.value.history = message.data?.newHistory as IRoom['history']
+      } else if (m.type === 'MEMBER_JOINED' || m.type === 'MEMBER_LEAVED') {
+        const { member } = m.data as RoomEvents.Member.Joined
+        const memberIndex = room.value.members.findIndex(({ id }) => id === member.id)
+        if (memberIndex === -1) {
+          room.value.members.push(member)
+        } else {
+          room.value.members[memberIndex] = member
+        }
       }
 
       if (m.type === 'MUSIC_PAUSED' || m.type === 'MUSIC_PLAYED' || m.type === 'MUSIC_SWITCHED') {
@@ -49,10 +52,10 @@ export default function useRoomEvents() {
       }
 
       if (m.type !== 'DISCONNECTED') {
-        window.room.modal.open({
-          type: 'SUCCESS',
-          title: getMessageType(m.type, data),
-        })
+        const title = getMessageType(m.type, m.data)
+        if (!!title?.trim()) {
+          window.room.modal.open({ type: 'SUCCESS', title })
+        }
       }
     }
   }
@@ -73,7 +76,9 @@ export default function useRoomEvents() {
     } else if (message === 'MUSIC_PAUSED' || message === 'MUSIC_PLAYED') {
       const { by } = data as RoomEvents.Music.Paused | RoomEvents.Music.Played
       return (
-        by?.displayName + (message === 'MUSIC_PAUSED' ? ' a mit en pause' : ' a reprit la musique')
+        by?.displayName +
+        ' a ' +
+        (message === 'MUSIC_PAUSED' ? ' reprit la musique' : 'mit en pause')
       )
     }
 

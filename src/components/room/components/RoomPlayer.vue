@@ -6,7 +6,7 @@
         {{ room.currentPlaying.name }} •
         <span>{{ room.currentPlaying.artists.join(', ') }}</span>
       </h4>
-      <h4 v-else>Aucun son joué actuellement</h4>
+      <h4 v-else>Lancer une musique sur votre téléphone pour commencer</h4>
     </header>
     <footer>
       <button
@@ -28,12 +28,12 @@
 
 <script lang="ts" setup>
 import useRoomPlayer from '@/composables/room/useRoomPlayer'
+import useConnectedRoom from '@/stores/connectedRoom'
+import { storeToRefs } from 'pinia'
+
+const { room } = storeToRefs(useConnectedRoom())
 
 defineProps({
-  room: {
-    type: Object,
-    required: true,
-  },
   togglePlay: {
     type: Function,
     required: true,

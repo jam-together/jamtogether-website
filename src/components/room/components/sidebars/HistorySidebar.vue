@@ -23,17 +23,19 @@
 <script lang="ts" setup>
 import BaseDynamicSidebar from '@/components/ui/BaseDynamicSidebar.vue'
 import useRoomEvents from '@/composables/room/useRoomEvents'
+import useConnectedRoom from '@/stores/connectedRoom'
 import { formatDate } from '@/utils/dateUtils'
-import type { IRoom } from '@/utils/types'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
-const props = defineProps<{
+const { room } = storeToRefs(useConnectedRoom())
+
+defineProps<{
   isShown: boolean
-  history: IRoom['history']
 }>()
 
 const sortedHistory = computed(() =>
-  [...props.history]
+  [...room.value!.history]
     .filter(({ type }) => {
       return !['DISCONNECTED'].includes(type)
     })

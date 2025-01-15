@@ -18,13 +18,13 @@
 </template>
 
 <script lang="ts" setup>
+import { storeToRefs } from 'pinia'
 import RoomSearchbar from './RoomSearchbar.vue'
+import useConnectedRoom from '@/stores/connectedRoom'
 
-const props = defineProps({
-  room: {
-    type: Object,
-    required: true,
-  },
+const { room } = storeToRefs(useConnectedRoom())
+
+defineProps({
   disconnect: {
     type: Function,
     required: true,
@@ -32,7 +32,7 @@ const props = defineProps({
 })
 
 const copyToClipboard = async () => {
-  await navigator.clipboard.writeText(props.room.id)
+  await navigator.clipboard.writeText(room.value.id)
   window.room.modal.open({
     title: 'Bravo',
     description: 'Code de la salle bien copié',

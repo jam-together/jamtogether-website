@@ -74,11 +74,9 @@ export default function useAPIRequest<T>({
     return null
   }
 
-  onMounted(async () => {
-    if (immediate) {
-      await handleRequest()
-    }
-  })
+  if (immediate) {
+    onMounted(async () => await handleRequest())
+  }
 
   return {
     isLoading,

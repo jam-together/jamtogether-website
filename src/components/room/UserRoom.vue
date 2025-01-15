@@ -5,30 +5,20 @@
         @show-members="isMembersSidebarShown = true"
         @show-history="isHistorySidebarShown = true"
         :disconnect="disconnect"
-        :room="room"
       />
-      <room-player :toggle-play="togglePlay" :is-music-played="isMusicPlayed" :room="room" />
-      <room-queue :room="room" />
+      <room-player :toggle-play="togglePlay" :is-music-played="isMusicPlayed" />
+      <room-queue />
     </div>
+
+    <history-sidebar @close="isHistorySidebarShown = false" :is-shown="isHistorySidebarShown" />
+    <members-sidebar @close="isMembersSidebarShown = false" :is-shown="isMembersSidebarShown" />
   </page-state-manager>
-
-  <history-sidebar
-    :history="room?.history ?? []"
-    @close="isHistorySidebarShown = false"
-    :is-shown="isHistorySidebarShown"
-  />
-
-  <members-sidebar
-    :members="room?.members ?? []"
-    @close="isMembersSidebarShown = false"
-    :is-shown="isMembersSidebarShown"
-  />
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 import { useWebsocketStore } from '@/stores/websocket.ts'
 import { useAuthenticationStore } from '@/stores/authentication'
@@ -48,6 +38,8 @@ import MembersSidebar from './components/sidebars/MembersSidebar.vue'
 
 import PageStateManager from '@/components/utils/PageStateManager.vue'
 import useRoomEvents from '@/composables/room/useRoomEvents'
+import useConnectedRoom from '@/stores/connectedRoom'
+import useRoomLeave from '@/composables/room/useRoomLeave'
 
 const route = useRoute()
 const router = useRouter()
@@ -67,55 +59,57 @@ const { isLoading, data, error } = useAPIRequest<{ accessToken: string; room: IR
 /** ROOM INITIALIZATION */
 const { websocket } = storeToRefs(useWebsocketStore())
 const { me } = storeToRefs(useAuthenticationStore())
-const room = computed({
-  get: () => data.value?.room ?? null,
-  set: (value) => {
-    if (!data.value) return
-    data.value.room = { ...data.value.room, ...value }
-  },
-})
-watch(data, async (value) => {
-  if (value) {
-    useAuthenticationStore().store(value.accessToken)
-  }
-  if (me.value) {
-    useWebsocketStore().initSocket(me.value!.clientId)
-  }
-})
+const { room, isMusicPlayed } = storeToRefs(useConnectedRoom())
 
-const { isMusicPlayed, togglePlay, setPlayed } = useRoomMusicPlayToggle()
+watch(
+  data,
+  async (value) => {
+    if (value) {
+      useAuthenticationStore().store(value.accessToken)
+      useConnectedRoom().init(value.room)
+    }
+    if (me.value && !websocket.value) {
+      useWebsocketStore().initSocket(me.value!.clientId)
+    }
+  },
+  { immediate: true },
+)
+
+const { togglePlay } = useRoomMusicPlayToggle()
 watch(room, (value) => {
   if (value) {
-    setPlayed(value.player?.isPlaying ?? false)
+    useConnectedRoom().setPlayed(value.player?.isPlaying ?? false)
   }
 })
 /** ROOM INITIALIZATION */
+
+/**  Disconnect room function */
+const disconnect = async () => {
+  await router.push({ name: 'home' })
+  useWebsocketStore().close()
+  //useAuthenticationStore().reset()
+  await useRoomLeave().request()
+}
 
 /* WS EVENTS */
 watch(
   websocket,
   (ws) => {
     if (ws && room.value) {
-      useRoomEvents().init({
-        websocket: ws,
-        room: room,
-        functions: {
-          disconnect,
-          setPlayed,
-        },
-      })
+      useRoomEvents().init()
     }
   },
-  { immediate: true },
+  { immediate: true, once: true },
 )
 /* END WS EVENTS */
 
-/**  Disconnect room function */
-const disconnect = async () => {
-  await router.push({ name: 'home' })
-  useWebsocketStore().close()
-  useAuthenticationStore().reset()
-}
+// /* HOOKS */
+// onMounted(() => {
+//   window.addEventListener('unload', disconnect)
+// })
+// onBeforeUnmount(() => {
+//   window.removeEventListener('unload', disconnect)
+// })
 </script>
 
 <style lang="scss" scoped>

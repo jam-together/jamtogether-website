@@ -1,16 +1,20 @@
 <template>
   <base-dynamic-sidebar
-    :title="`Membres (${members.length})`"
+    :title="`Membres (${room?.members.length})`"
     @close="emit('close')"
     :is-shown="isShown"
-    :style="{ '--member-size': members.length }"
   >
     <ul>
-      <li v-for="member in members" :key="member.id">
+      <li v-for="member in room?.members" :key="member.id">
         <span :style="generateRandomStyle()" class="logo">{{
           member.displayName.slice(0, 1)
         }}</span>
-        <span class="display-name">{{ member.displayName }}</span>
+        <span class="display-name">
+          <span>{{ member.displayName }}</span>
+          <span class="connection-status">{{
+            member.isConnected ? 'Connecté' : 'Deconnecté'
+          }}</span>
+        </span>
       </li>
     </ul>
   </base-dynamic-sidebar>
@@ -18,13 +22,13 @@
 
 <script lang="ts" setup>
 import BaseDynamicSidebar from '@/components/ui/BaseDynamicSidebar.vue'
-import type { IRoomMember } from '@/utils/types'
+import useConnectedRoom from '@/stores/connectedRoom'
 
 defineProps<{
   isShown: boolean
-  members: IRoomMember[]
 }>()
 
+const { room } = useConnectedRoom()
 const emit = defineEmits(['close'])
 
 const generateRandomStyle = () => {
@@ -69,6 +73,20 @@ ul {
       border-radius: 100px;
 
       font-family: 'poppins-bold', sans-serif;
+    }
+
+    & > span.display-name {
+      display: flex;
+      flex-direction: column;
+
+      & > span {
+        display: block;
+      }
+
+      & > span.connection-status {
+        font-size: 0.9em;
+        color: $gray-2;
+      }
     }
 
     &:not(:last-of-type) {
