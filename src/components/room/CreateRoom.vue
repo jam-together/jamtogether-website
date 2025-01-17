@@ -55,10 +55,14 @@ watch(
         errorMessage.value = error.value.message
       }
 
-      const data = await handleRequest({ body: { code } })
-      if (data) {
-        await createRoom(data)
-      }
+     try {
+         const data = await handleRequest({ body: { code } })
+          if(data) {
+            await createRoom(data)
+          }
+    } catch(e) { 
+      const error = e as Error;
+      errorMessage.value = error.stack;
     }
   },
   { immediate: true },
