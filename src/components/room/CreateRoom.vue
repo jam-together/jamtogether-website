@@ -61,8 +61,8 @@ watch(
             await createRoom(data)
           }
     } catch(e) { 
-      const error = e as Error;
-      errorMessage.value = error.stack;
+      const error = e as Error
+      errorMessage.value = error.stack
     }
   },
   { immediate: true },
