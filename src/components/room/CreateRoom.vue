@@ -53,6 +53,7 @@ watch(
 
       if (error.value) {
         errorMessage.value = error.value.message
+        return
       }
 
      try {
@@ -64,6 +65,7 @@ watch(
       const error = e as Error
       errorMessage.value = error.stack
     }
+}
   },
   { immediate: true },
 )
