@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import useAPIRequest from '@/composables/useAPIRequest.ts'
-import { ref, watch, type Ref } from 'vue'
+import { ref, watch, onMounted, type Ref } from 'vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { ISpotifyCredentials } from '@/utils/types'
@@ -99,6 +99,7 @@ async function backToHome() {
   await useRouter().push({ name: 'home' })
 }
 /* FUNCTIONS */
+onMounted(() => useAuthenticationStore().reset())
 </script>
 
 <style lang="scss" scoped>
