@@ -15,6 +15,7 @@
             member.isConnected ? 'Connecté' : 'Deconnecté'
           }}</span>
         </span>
+        <span class="owner">{{ $t('room.components.sidebars.membersSidebar.owner') }}</span>
       </li>
     </ul>
   </base-dynamic-sidebar>
@@ -87,6 +88,17 @@ ul {
         font-size: 0.9em;
         color: $gray-2;
       }
+    }
+
+    & > span.owner {
+      background-color: $secondary-200;
+      color: $gray-3;
+      padding: 0.4em 0.8em;
+      border-radius: 100px;
+
+      font-size: 0.9em;
+
+      font-family: 'publicsans-bold', sans-serif;
     }
 
     &:not(:last-of-type) {

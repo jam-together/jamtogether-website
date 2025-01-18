@@ -75,6 +75,17 @@ header {
         @include icon('content-copy');
       }
     }
+
+    & > button.icon.share {
+      border-color: transparent;
+      padding: unset;
+
+      &::before {
+        position: unset;
+        font-size: 1em;
+        @include icon('share-variant');
+      }
+    }
   }
 
   & > h4.connected-to {

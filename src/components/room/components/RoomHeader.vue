@@ -10,6 +10,7 @@
     </button>
     <h3 class="room-id">
       CODE <span class="icon copy" @click="copyToClipboard">{{ room.id }}</span>
+      <button class="icon share" @click="share" />
     </h3>
     <h4 v-show="room.player?.deviceName" class="connected-to">
       {{ $t('room.components.header.connectedTo', [room.player?.deviceName]) }}
@@ -40,6 +41,24 @@ const copyToClipboard = async () => {
     description: 'Code de la salle bien copié',
     type: 'SUCCESS',
   })
+}
+
+const share = async () => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Jamtogether',
+        text: `Rejoint mon salon en cliquant sur le lien au dessus !`,
+        url: window.location.href,
+      })
+    } catch (_) {}
+  } else {
+    window.room.modal.open({
+      title: 'Oups..',
+      type: 'ERROR',
+      description: 'Votre navigateur ne prend pas en charge cette fonctionnalité.',
+    })
+  }
 }
 
 const emit = defineEmits(['showHistory', 'showMembers'])

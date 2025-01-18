@@ -3,12 +3,36 @@
     "madeBy": "Fait par"
   },
   "room": {
+    "errors": {
+      "title": "Impossible d'effectuer l'action",
+      "cannotSearch": "Impossible de rechercher"
+    },
+    "actions": {
+      "pause": "Musique mit en pause",
+      "play": "Musique reprise !",
+      "skip-next": "Vous avez passé la musique",
+      "skip-previous": "Vous avez passé la musique",
+      "add-to-queue": "Musique ajouté à la file d'attente"
+    },
+    "events": {
+      "memberJoined": "{0} a rejoint le salon",
+      "memberLeaved": "{0} a quitté le salon",
+      "musicAdded": "{0} a ajouté la musique: {1}",
+      "musicRemoved": "{0} a retiré la musique: {1}",
+      "musicSwitchedAutomaticly": "Nouvelle musique: {0}",
+      "musicSwitched": "{0} a changé la musique par {1}",
+      "musicPausedAutomaticly": "Musique mit en pause",
+      "musicPlayedAutomaticly": "Musique reprise",
+      "musicPaused": "{0} a mit en pause la musique",
+      "musicPlayed": "{0} a reprit la musique"
+    },
     "components": {
       "sidebars": {
         "historySidebar": {
           "title": "Historique"
         },
         "membersSidebar": {
+          "owner": "Propriétaire",
           "title": "Membres"
         }
       },
