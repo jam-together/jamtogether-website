@@ -1,3 +1,4 @@
+import type { IRoomMember } from '@/utils/types'
 import { jwtDecode } from 'jwt-decode'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
@@ -6,6 +7,7 @@ interface IMe {
   clientId: string
   roomId: string
   roles: string[]
+  member: IRoomMember
 }
 
 export const useAuthenticationStore = defineStore('authentication', () => {

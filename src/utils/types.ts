@@ -55,6 +55,10 @@ export declare namespace RoomEvents {
       member: IRoomMember
     }
 
+    interface Nickname {
+      member: IRoomMember
+    }
+
     type MessageType = 'MEMBER_JOINED' | 'MEMBER_LEAVED'
   }
   namespace Music {
@@ -98,6 +102,7 @@ export declare namespace RoomEvents {
     | 'DISCONNECTED'
     | 'HISTORY_MODIFIED'
     | 'NEW_DEVICE'
+    | 'NICKNAME_CHANGED'
   interface IncomingMessage<T = {}> {
     date: Date
     type: RoomEvents.MessageType

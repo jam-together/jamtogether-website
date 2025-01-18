@@ -55,6 +55,15 @@ export default function useRoomEvents() {
         room.value.queue = queue
       }
 
+      if (m.type === 'NICKNAME_CHANGED') {
+        const message = m as RoomEvents.IncomingMessage<RoomEvents.Member.Nickname>
+        const member = message.data?.member
+        if (!member) return
+
+        const memberIndex = room.value.members.findIndex(({ id }) => id === member.id)
+        room.value.members[memberIndex].displayName = member.displayName
+      }
+
       if (m.type !== 'DISCONNECTED') {
         const title = getMessageType(m.type, m.data)
         if (!!title?.trim()) {
@@ -80,6 +89,7 @@ export default function useRoomEvents() {
       )
     } else if (message === 'MUSIC_SWITCHED') {
       const { newTrack, by } = data as RoomEvents.Music.Switched
+      if (!newTrack) return ''
       if (!by?.displayName) return 'Nouvelle musique: ' + newTrack.name
       return `${by?.displayName} a changé la musique par ` + newTrack.name
     } else if (message === 'MUSIC_PAUSED' || message === 'MUSIC_PLAYED') {
