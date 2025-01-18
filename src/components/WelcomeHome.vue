@@ -43,17 +43,24 @@ const inputRefs = ref<HTMLInputElement[]>([])
 const isDisabled = computed(() => code.value.filter((c) => !c.trim()).length > 0)
 
 const onInput = (index: number, event: Event) => {
-  const value = (event.target! as HTMLInputElement).value
-  code.value[index] = value
-  if (index < code.value.length - 1) {
-    inputRefs.value[index + 1]?.focus()
+  let value = (event.target! as HTMLInputElement).value
+  const [first, ...rest] = value
+  value = first ?? ''
+
+  const lastInputBox = index === inputRefs.value.length - 1
+  const didInsertContent = first !== undefined
+
+  if (didInsertContent && !lastInputBox) {
+    inputRefs.value[index + 1].focus()
+    inputRefs.value[index + 1].value = rest.join('')
+    inputRefs.value[index + 1].dispatchEvent(new Event('input'))
   }
 }
 
 const onBackspace = (index: number, event: Event) => {
   const value = (event.target! as HTMLInputElement).value
-  if (value === '' && index > 0) {
-    inputRefs.value[index - 1]?.focus()
+  if (value === '') {
+    inputRefs.value[Math.max(0, index - 1)]?.focus()
   }
 }
 

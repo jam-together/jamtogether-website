@@ -56,16 +56,16 @@ watch(
         return
       }
 
-     try {
-         const data = await handleRequest({ body: { code } })
-          if(data) {
-            await createRoom(data)
-          }
-    } catch(e) { 
-      const error = e as Error
-      errorMessage.value = error.stack
+      try {
+        const data = await handleRequest({ body: { code } })
+        if (data) {
+          await createRoom(data)
+        }
+      } catch (e) {
+        const error = e as Error
+        errorMessage.value = error.stack || error.message
+      }
     }
-}
   },
   { immediate: true },
 )

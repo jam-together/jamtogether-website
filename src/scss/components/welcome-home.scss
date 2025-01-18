@@ -92,7 +92,7 @@ div.center {
 
         & > input {
           width: calc(100% / 6);
-          height: 3.5em;
+          height: 2.5em;
 
           text-transform: uppercase;
           text-align: center;
@@ -101,6 +101,7 @@ div.center {
           transition: all 0.5s ease;
 
           border: 2px solid $gray-3;
+          padding: unset;
 
           &:is(:focus, :hover) {
             border-color: $gray-2;
