@@ -2,7 +2,7 @@
   <div v-show="room.queue.length" class="queue">
     <h4>{{ $t('room.components.queue.title') }} ({{ room.queue.length }})</h4>
     <ul>
-      <li v-for="track in room.queue" :key="track.id">
+      <li v-for="(track, index) in room.queue" :key="index">
         <img :src="track.image" :alt="track.name" />
         <div>
           {{ track.name }} - <span>{{ track.artists.join(', ') }}</span>

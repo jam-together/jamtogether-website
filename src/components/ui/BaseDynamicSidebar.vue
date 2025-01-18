@@ -60,6 +60,8 @@ aside {
   width: 100%;
   height: 100vh;
 
+  z-index: 99999; // belek
+
   background-color: rgba(0, 0, 0, 0.5);
 
   & > div.left {

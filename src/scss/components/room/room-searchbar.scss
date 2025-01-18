@@ -4,6 +4,32 @@ div.search-field {
 
   & > div.search-area {
     position: relative;
+
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+
+    & > input {
+      padding-right: 2em;
+    }
+
+    & > button.playlist-icon {
+      padding: 0.9em 1em;
+
+      background-color: $gray-3;
+      border-color: $gray-3;
+
+      &:hover {
+        background-color: $black;
+      }
+
+      &::before {
+        position: unset;
+        font-size: 1.9em;
+        @include icon('playlist-music');
+      }
+    }
+
     & > span.search-icon::before {
       @include icon('magnify');
       font-size: 1.8em;

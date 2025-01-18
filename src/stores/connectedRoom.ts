@@ -27,10 +27,12 @@ const useConnectedRoom = defineStore('connectedRoom', () => {
       _data.value = { ..._data.value, ...value }
     },
   })
+  const isInitialized = ref<boolean>(false)
   const isMusicPlayed = ref<boolean>(false)
 
   const init = (data: IRoom) => {
     _data.value = data
+    isInitialized.value = true
   }
 
   const setPlayed = (isPlayed: boolean) => {
@@ -40,6 +42,7 @@ const useConnectedRoom = defineStore('connectedRoom', () => {
   return {
     room,
     setPlayed,
+    isInitialized,
     isMusicPlayed,
     init,
   }

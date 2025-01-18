@@ -25,6 +25,10 @@
       },
       "searchbar": {
         "searchText": "Rechercher dans la bibliothèque spotify"
+      },
+      "playlists": {
+        "title": "Playlists",
+        "backButton": "Retour aux playlists"
       }
     }
   }

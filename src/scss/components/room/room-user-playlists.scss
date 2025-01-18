@@ -1,0 +1,136 @@
+ul.playlists {
+  display: flex;
+  flex-direction: column;
+
+  max-height: 90vh;
+  overflow: auto;
+
+  & > li {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+    cursor: pointer;
+
+    padding: 0.8em;
+    transition: all 0.5s ease;
+    position: relative;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid $gray-2;
+    }
+
+    & > img {
+      width: 5em;
+      border-radius: 10px;
+    }
+
+    & > div {
+      & > span.icon.arrow-right {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+
+        &::before {
+          position: unset;
+          font-size: 2.5em;
+          @include icon('chevron-right');
+        }
+      }
+
+      & > h3 {
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        width: 7em;
+        overflow: hidden;
+      }
+
+      & > h5 {
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+
+        width: 13em;
+        overflow: hidden;
+
+        font-weight: normal;
+        font-family: 'publicsans-regular', sans-serif;
+      }
+    }
+  }
+}
+
+button.back-button {
+  border-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+
+  &::before {
+    position: unset;
+    @include icon('arrow-left');
+  }
+}
+
+ul.playlist-items {
+  display: flex;
+  flex-direction: column;
+
+  max-height: 100vh;
+  overflow: auto;
+
+  & > li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 1em;
+
+    position: relative;
+    padding-right: 3em;
+
+    &:not(:last-of-type) {
+      border-bottom: 1px solid $gray-2;
+    }
+
+    & > img {
+      width: 3em;
+      border-radius: 10px;
+    }
+    & > h4 {
+      font-size: 1.1em;
+    }
+    & > h4 > span {
+      font-size: 0.9em;
+      color: $gray-2;
+
+      max-width: 8em;
+      text-wrap: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+
+      display: block;
+
+      font-family: 'publicsans-regular', sans-serif;
+      font-weight: normal;
+    }
+
+    & > button.icon.add-to-list {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+
+      transform: translateY(-50%);
+
+      border-radius: 100px;
+      padding: 0.5em;
+
+      background-color: $black;
+      color: $gray-2;
+      border-color: transparent;
+
+      &::before {
+        @include icon('plus');
+        position: unset;
+      }
+    }
+  }
+}

@@ -21,6 +21,17 @@ export interface IPlayer {
   deviceName: string
 }
 
+export interface IPlaylist {
+  id: string
+  name: string
+  image: string
+  description: string
+  public: boolean
+  tracks: ITrack[]
+}
+
+export type TPlaylists = Pick<IPlaylist, 'id' | 'name' | 'image' | 'description' | 'public'>[]
+
 export interface IRoomMember {
   id: string
   displayName: string

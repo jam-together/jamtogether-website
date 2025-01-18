@@ -8,10 +8,17 @@ div.room-notification {
   padding: 1em 2em;
   padding-left: 5em;
 
+  z-index: 99999;
+
   animation: 0.5s notification-open forwards;
 
   &.close {
     animation: 0.5s notification-close forwards;
+  }
+
+  & > h3,
+  & > h4 {
+    width: 80%;
   }
 
   & > h3 {

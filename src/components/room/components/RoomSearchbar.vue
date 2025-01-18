@@ -1,6 +1,7 @@
 <template>
   <div ref="searchbarRef" class="search-field">
     <div @click="isSearchbarOpened = true" class="search-area">
+      <button type="button" @click="playlistsShown = true" class="icon playlist-icon" />
       <input v-model="searchQuery" :placeholder="$t('room.components.searchbar.searchText')" />
       <span class="icon search-icon" />
     </div>
@@ -16,10 +17,14 @@
         </li>
       </template>
       <template v-else>
-        <loading-spinner />
+        <LoadingSpinner />
       </template>
     </ul>
   </div>
+
+  <template v-if="playlistsShown">
+    <room-user-playlists @close="playlistsShown = false" />
+  </template>
 </template>
 
 <script lang="ts" setup>
@@ -28,6 +33,9 @@ import useRoomMusicSearch from '@/composables/room/useRoomMusicSearch'
 import { debunce, triggerWhenFound } from '@/utils/globalUtils'
 import type { ITrack } from '@/utils/types'
 import useRoomPlayer from '@/composables/room/useRoomPlayer'
+import RoomUserPlaylists from './RoomUserPlaylists.vue'
+
+const playlistsShown = ref<boolean>(false)
 
 const props = defineProps({
   roomId: {
@@ -51,7 +59,7 @@ const isSearchbarOpened = computed({
   set: (value) => {
     if (!value) {
       resetSearch()
-    } else {
+    } else if (searchQuery.value?.trim() !== '') {
       searchQuery.value = searchQuery.value + ' '
     }
   },
