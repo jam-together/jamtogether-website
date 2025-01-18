@@ -5,8 +5,8 @@
   <template v-else-if="!isLoading && error">
     <div class="error-mdidle">
       <h2>Une erreur est survenue..</h2>
-      <h3>{{ error.message }}</h3>
-      <span class="link" @click="backToHome">Retour à l'accueil</span>
+      <h3>{{ error instanceof Error ? error.message : error }}</h3>
+      <span class="link" @click="() => backToHome()">Retour à l'accueil</span>
     </div>
   </template>
   <template v-else>
@@ -17,6 +17,7 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
+import { useAuthenticationStore } from '@/stores/authentication'
 
 defineProps({
   isLoading: {
@@ -24,7 +25,7 @@ defineProps({
     required: true,
   },
   error: {
-    type: [Error, null],
+    type: [Error, String, null],
     required: false,
   },
 })
@@ -32,6 +33,7 @@ defineProps({
 const router = useRouter()
 
 const backToHome = async () => {
+  useAuthenticationStore().reset()
   await router.push({ name: 'home' })
 }
 </script>

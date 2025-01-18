@@ -1,23 +1,14 @@
 <template>
-  <template v-if="!errorMessage">
-    <loading-spinner />
-  </template>
-  <template v-else>
-    <div class="error">
-      <h3>Une erreur est survenue</h3>
-      <h4>{{ errorMessage }}</h4>
-      <span class="link" @click="backToHome">Retour à l'accueil</span>
-    </div>
-  </template>
+  <page-state-manager :is-loading="!errorMessage" :error="errorMessage"> </page-state-manager>
 </template>
 
 <script setup lang="ts">
 import useAPIRequest from '@/composables/useAPIRequest.ts'
 import { ref, watch, onMounted, type Ref } from 'vue'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import type { ISpotifyCredentials } from '@/utils/types'
 import { useAuthenticationStore } from '@/stores/authentication'
+import PageStateManager from '../utils/PageStateManager.vue'
 
 const route = useRoute()
 
@@ -100,10 +91,6 @@ async function createRoom(credentials: ISpotifyCredentials) {
   }
 }
 
-async function backToHome() {
-  useAuthenticationStore().reset() // reset token if an error happends
-  await useRouter().push({ name: 'home' })
-}
 /* FUNCTIONS */
 onMounted(() => useAuthenticationStore().reset())
 </script>

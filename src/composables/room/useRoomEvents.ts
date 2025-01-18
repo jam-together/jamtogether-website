@@ -80,11 +80,12 @@ export default function useRoomEvents() {
       )
     } else if (message === 'MUSIC_SWITCHED') {
       const { newTrack, by } = data as RoomEvents.Music.Switched
-      if (!by?.displayName) return ''
+      if (!by?.displayName) return 'Nouvelle musique: ' + newTrack.name
       return `${by?.displayName} a changé la musique par ` + newTrack.name
     } else if (message === 'MUSIC_PAUSED' || message === 'MUSIC_PLAYED') {
       const { by } = data as RoomEvents.Music.Paused | RoomEvents.Music.Played
-      if (!by?.displayName) return ''
+      if (!by?.displayName)
+        return message === 'MUSIC_PAUSED' ? 'Musique reprise' : 'Musique mit en pause'
       return (
         by?.displayName +
         ' a ' +
