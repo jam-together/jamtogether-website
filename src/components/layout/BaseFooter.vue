@@ -1,9 +1,13 @@
 <template>
   <footer>
-    JamTogether version 0.1 | Fait par
+    JamTogether v{{ packageJSON.version }} | Fait par
     <a href="https://ballon2zipette.com" target="_blank">Ballon2zipette-corp</a>
   </footer>
 </template>
+
+<script lang="ts" setup>
+import packageJSON from '../../../package.json'
+</script>
 
 <style lang="scss" scoped>
 footer {
