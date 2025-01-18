@@ -48,4 +48,4 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          (git tag -a "v${{ env.VERSION }}" -m "Release v${{ env.VERSION }}" && git push origin "v${{ env.VERSION }}") || "Tag already exists, nothing will be pushed on"
+          (git tag -a "v${{ env.VERSION }}" -m "Release v${{ env.VERSION }}" && git push origin "v${{ env.VERSION }}") || echo "Tag already exists, nothing will be pushed on"
