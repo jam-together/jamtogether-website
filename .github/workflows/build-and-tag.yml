@@ -2,7 +2,6 @@ name: CI - website
 on:
   push:
     branches: ['main']
-  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -37,10 +36,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
   tag-repo:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -51,5 +48,5 @@ jobs:
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git tag -a "v${{ env.VERSION }}" -m "Release v${{ env.VERSION }}"
+          git tag -a "v${{ env.VERSION }}" -m "Release v${{ env.VERSION }}" || "Tag already exists, nothing will be pushed on" && \
           git push origin "v${{ env.VERSION }}"
