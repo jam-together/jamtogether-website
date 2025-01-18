@@ -10,7 +10,7 @@ export default function useRoomEvents() {
     if (!websocket) return
     websocket.value!.onmessage = (event: MessageEvent) => {
       const data = event.data
-      if (!data) return
+      if (!data || data === '__pong__') return
 
       const m: RoomEvents.IncomingMessage = JSON.parse(data)
 
