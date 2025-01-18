@@ -1,0 +1,31 @@
+{
+  "footer": {
+    "madeBy": "Fait par"
+  },
+  "room": {
+    "components": {
+      "sidebars": {
+        "historySidebar": {
+          "title": "Historique"
+        },
+        "membersSidebar": {
+          "title": "Membres"
+        }
+      },
+      "header": {
+        "leaveRoom": "Quitter le salon",
+        "connectedTo": "Connecté à {0}"
+      },
+      "player": {
+        "songPlayed": "Son joué actuellement",
+        "gettingStarted": "Lancer une musique sur votre téléphone pour commencer"
+      },
+      "queue": {
+        "title": "File d'attente"
+      },
+      "searchbar": {
+        "searchText": "Rechercher dans la bibliothèque spotify"
+      }
+    }
+  }
+}

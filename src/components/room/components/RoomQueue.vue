@@ -1,6 +1,6 @@
 <template>
   <div v-show="room.queue.length" class="queue">
-    <h4>File d'attente ({{ room.queue.length }})</h4>
+    <h4>{{ $t('room.components.queue.title') }} ({{ room.queue.length }})</h4>
     <ul>
       <li v-for="track in room.queue" :key="track.id">
         <img :src="track.image" :alt="track.name" />

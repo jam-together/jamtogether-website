@@ -1,12 +1,12 @@
 <template>
   <div class="player">
     <header>
-      <h3>Son joué actuellement</h3>
+      <h3>{{ $t('room.components.player.songPlayed') }}</h3>
       <h4 v-if="room.currentPlaying">
         {{ room.currentPlaying.name }} •
         <span>{{ room.currentPlaying.artists.join(', ') }}</span>
       </h4>
-      <h4 v-else>Lancer une musique sur votre téléphone pour commencer</h4>
+      <h4 v-else>{{ $t('room.components.player.gettingStarted') }}</h4>
     </header>
     <footer>
       <button

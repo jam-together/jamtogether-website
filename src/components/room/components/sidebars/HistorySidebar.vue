@@ -1,6 +1,6 @@
 <template>
   <base-dynamic-sidebar
-    :title="`Historique (${sortedHistory.length})`"
+    :title="`${$t('room.components.sidebars.historySidebar.title')} (${sortedHistory.length})`"
     @close="emit('close')"
     :is-shown="isShown"
   >

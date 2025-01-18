@@ -1,7 +1,7 @@
 <template>
   <div ref="searchbarRef" class="search-field">
     <div @click="isSearchbarOpened = true" class="search-area">
-      <input v-model="searchQuery" placeholder="Rechercher dans la bibliothèque spotify" />
+      <input v-model="searchQuery" :placeholder="$t('room.components.searchbar.searchText')" />
       <span class="icon search-icon" />
     </div>
 

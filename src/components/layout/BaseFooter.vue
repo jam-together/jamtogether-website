@@ -1,6 +1,6 @@
 <template>
   <footer>
-    JamTogether v{{ packageJSON.version }} | Fait par
+    JamTogether v{{ packageJSON.version }} | {{ $t('footer.madeBy') }}
     <a href="https://ballon2zipette.com" target="_blank">Ballon2zipette-corp</a>
   </footer>
 </template>

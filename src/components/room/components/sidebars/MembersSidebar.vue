@@ -1,6 +1,6 @@
 <template>
   <base-dynamic-sidebar
-    :title="`Membres (${room?.members.length})`"
+    :title="`${$t('room.components.sidebars.membersSidebar.title')} (${room?.members.length})`"
     @close="emit('close')"
     :is-shown="isShown"
   >

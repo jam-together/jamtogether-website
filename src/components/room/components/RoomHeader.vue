@@ -5,12 +5,14 @@
       <button @click="emit('showMembers')" class="icon members" />
     </div>
 
-    <button @click="() => disconnect()" class="disconnect icon">Quitter le salon</button>
+    <button @click="() => disconnect()" class="disconnect icon">
+      {{ $t('room.components.header.leaveRoom') }}
+    </button>
     <h3 class="room-id">
       CODE <span class="icon copy" @click="copyToClipboard">{{ room.id }}</span>
     </h3>
     <h4 v-show="room.player?.deviceName" class="connected-to">
-      Connecté à {{ room.player?.deviceName }}
+      {{ $t('room.components.header.connectedTo', [room.player?.deviceName]) }}
     </h4>
 
     <room-searchbar :room-id="room.id" />
