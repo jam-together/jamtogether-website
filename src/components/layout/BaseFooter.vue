@@ -11,6 +11,9 @@ import packageJSON from '../../../package.json'
 
 <style lang="scss" scoped>
 footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
   text-align: center;
   color: $gray-1;
   padding: 2em 0;

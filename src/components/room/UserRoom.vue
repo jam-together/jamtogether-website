@@ -1,5 +1,5 @@
 <template>
-  <page-state-manager :is-loading="isLoading" :error="error">
+  <page-state-manager v-if="!!me" :is-loading="isLoading" :error="error">
     <div v-if="room" class="wrapper">
       <room-header
         @show-members="isMembersSidebarShown = true"
@@ -13,6 +13,22 @@
     <history-sidebar @close="isHistorySidebarShown = false" :is-shown="isHistorySidebarShown" />
     <members-sidebar @close="isMembersSidebarShown = false" :is-shown="isMembersSidebarShown" />
   </page-state-manager>
+
+  <div class="primary input-name" v-else>
+    <h3>Entrer un nom d'utilisateur</h3>
+    <input type="text" placeholder="User 1" v-model="username" />
+    <button
+      class="primary"
+      @click="
+        handleRequest({
+          body: { name: username },
+        })
+      "
+      :disabled="username.length < 3"
+    >
+      Confirmer
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -46,14 +62,19 @@ const router = useRouter()
 
 const roomId = ref<string>(route.params.id as string)
 
+const username = ref<string>('')
+
 // sidebars
 const isMembersSidebarShown = ref<boolean>(false)
 const isHistorySidebarShown = ref<boolean>(false)
 
 // fetch room data
-const { isLoading, data, error } = useAPIRequest<{ accessToken: string; room: IRoom }>({
-  endpoint: '/rooms/get/' + roomId.value,
-  immediate: true,
+const { isLoading, data, error, handleRequest } = useAPIRequest<{
+  accessToken: string
+  room: IRoom
+}>({
+  endpoint: '/rooms/join/' + roomId.value,
+  method: 'POST',
 })
 
 /** ROOM INITIALIZATION */
@@ -74,6 +95,10 @@ watch(
   },
   { immediate: true },
 )
+
+watch(error, (err) => {
+  window.room.modal.open({ type: 'ERROR', title: err instanceof Error ? err.message : err })
+})
 
 const { togglePlay } = useRoomMusicPlayToggle()
 watch(room, (value) => {
@@ -114,4 +139,29 @@ watch(
 
 <style lang="scss" scoped>
 @import '@/scss/components/user-room';
+
+.input-name {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  gap: 1em;
+
+  @media screen and (max-width: 750px) {
+    width: 95%;
+  }
+
+  h3 {
+    text-align: center;
+  }
+
+  button {
+    width: 100%;
+  }
+}
 </style>
