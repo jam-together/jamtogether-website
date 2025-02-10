@@ -1,32 +1,45 @@
-@import "assets/font-loader";
+@import 'assets/font-loader';
 
-*, *::after, *::before {
+*,
+*::after,
+*::before {
   outline: none;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   scroll-behavior: smooth;
-  font-family: "publicsans-regular", sans-serif;
+  font-family: 'publicsans-regular', sans-serif;
   color: $white;
   background-color: $black;
+  min-height: 100vh;
+}
+
+body {
+  position: relative;
 }
 
 a {
   text-decoration: none;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: normal;
 }
 
-h1, h2 {
-  font-family: "sora-bold", sans-serif;
+h1,
+h2 {
+  font-family: 'sora-bold', sans-serif;
 }
-h3, h4 {
-  font-family: "sora-medium", sans-serif;
+h3,
+h4 {
+  font-family: 'sora-medium', sans-serif;
 }
 
 h1 {
@@ -54,5 +67,5 @@ h4 {
   }
 }
 
-@import "./assets/buttons";
-@import "./assets/inputs";
+@import './assets/buttons';
+@import './assets/inputs';
