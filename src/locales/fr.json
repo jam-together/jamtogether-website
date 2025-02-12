@@ -33,6 +33,7 @@
         },
         "membersSidebar": {
           "owner": "Propriétaire",
+          "member": "Membre",
           "title": "Membres"
         }
       },
