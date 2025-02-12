@@ -2,12 +2,13 @@ import { useAuthenticationStore } from '@/stores/authentication'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 
-type TMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+type TMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD'
 
 interface IPreRequestParams {
   method?: TMethod
   endpoint?: string
   immediate?: boolean
+  body?: Record<string, unknown>
 }
 
 interface IRequestParams {
@@ -19,6 +20,7 @@ export default function useAPIRequest<T>({
   immediate = false,
   method = 'GET',
   endpoint = '/',
+  body = {}
 }: IPreRequestParams = {}) {
   const isLoading = ref<boolean>(false)
   const data = ref<T | null>(null)
@@ -41,22 +43,26 @@ export default function useAPIRequest<T>({
   }
 
   async function handleRequest({
-    body,
+    body: overloadedBody,
     endpoint: overloadedEndpoint,
   }: IRequestParams = {}): Promise<T | null> {
+    const bodySent = overloadedBody ?? body;
+    const canSendBody = method !== "GET" && method !== "HEAD";
+
     try {
       isLoading.value = true
       if (!overloadedEndpoint && !endpoint) {
         throw new Error('You need to put at least one endpoint to your request.')
       }
+
       const response = await fetch(_buildURL(overloadedEndpoint ?? endpoint), {
         method,
         headers: {
-          ...(body && { 'content-type': 'application/json' }),
+          ...(canSendBody && { 'content-type': 'application/json' }),
           ...(authorization.value && { authorization: authorization.value }),
         },
-        ...(body && {
-          body: JSON.stringify(body),
+        ...(canSendBody && {
+          body: JSON.stringify(bodySent ),
         }),
       })
       const resData = await response.json()
@@ -68,6 +74,7 @@ export default function useAPIRequest<T>({
       return resData
     } catch (e) {
       error.value = e as Error
+      console.error(e);
     } finally {
       isLoading.value = false
     }

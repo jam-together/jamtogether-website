@@ -19,11 +19,7 @@
     <input type="text" placeholder="User 1" v-model="username" />
     <button
       class="primary"
-      @click="
-        handleRequest({
-          body: { name: username },
-        })
-      "
+      @click="joinRoom"
       :disabled="username.length < 3"
     >
       Confirmer
@@ -68,18 +64,21 @@ const username = ref<string>('')
 const isMembersSidebarShown = ref<boolean>(false)
 const isHistorySidebarShown = ref<boolean>(false)
 
+// user store
+const { me, accessToken } = storeToRefs(useAuthenticationStore())
+
 // fetch room data
 const { isLoading, data, error, handleRequest } = useAPIRequest<{
   accessToken: string
   room: IRoom
 }>({
   endpoint: '/rooms/join/' + roomId.value,
+  immediate: !!accessToken.value,
   method: 'POST',
 })
 
 /** ROOM INITIALIZATION */
 const { websocket } = storeToRefs(useWebsocketStore())
-const { me } = storeToRefs(useAuthenticationStore())
 const { room, isMusicPlayed } = storeToRefs(useConnectedRoom())
 
 watch(
@@ -90,14 +89,17 @@ watch(
       useConnectedRoom().init(value.room)
     }
     if (me.value && !websocket.value) {
-      useWebsocketStore().initSocket(me.value!.clientId)
+      useWebsocketStore().initSocket(me.value.clientId)
     }
   },
   { immediate: true },
 )
 
 watch(error, (err) => {
-  window.room.modal.open({ type: 'ERROR', title: err instanceof Error ? err.message : err })
+  window.room.modal.open({
+    type: 'ERROR',
+    title: err?.message ?? "Unknown error"
+  })
 })
 
 const { togglePlay } = useRoomMusicPlayToggle()
@@ -108,11 +110,19 @@ watch(room, (value) => {
 })
 /** ROOM INITIALIZATION */
 
+// join the current room (with a username)
+const joinRoom = async () => {
+  await handleRequest({
+    body: {
+      ... username.value && {name: username.value}
+    }
+  })
+}
+
 /**  Disconnect room function */
 const disconnect = async () => {
   await router.push({ name: 'home' })
   useWebsocketStore().close()
-  //useAuthenticationStore().reset()
   await useRoomLeave().request()
 }
 
@@ -127,14 +137,6 @@ watch(
   { immediate: true, once: true },
 )
 /* END WS EVENTS */
-
-// /* HOOKS */
-// onMounted(() => {
-//   window.addEventListener('unload', disconnect)
-// })
-// onBeforeUnmount(() => {
-//   window.removeEventListener('unload', disconnect)
-// })
 </script>
 
 <style lang="scss" scoped>

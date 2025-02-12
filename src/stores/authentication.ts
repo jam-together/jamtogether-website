@@ -1,7 +1,7 @@
 import type { IRoomMember } from '@/utils/types'
 import { jwtDecode } from 'jwt-decode'
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 interface IMe {
   clientId: string
@@ -11,16 +11,14 @@ interface IMe {
 }
 
 export const useAuthenticationStore = defineStore('authentication', () => {
-  const accessToken = computed<string | null>(() => {
-    return localStorage.getItem('access_token')
-  })
+  const accessToken = ref<string|null>(localStorage.getItem('access_token'));
   const authorization = computed<string | null>(() => {
     return accessToken.value ? `Bearer ${accessToken.value}` : null
   })
 
   const me = computed<IMe | null>(() => {
     if (!accessToken.value) return null
-    return unserialize(accessToken.value!)
+    return unserialize(accessToken.value)
   })
 
   const unserialize = (token: string): IMe | null => {
@@ -38,16 +36,21 @@ export const useAuthenticationStore = defineStore('authentication', () => {
     localStorage.removeItem('access_token')
   }
 
-  const store = (accessToken: string): void => {
-    const decoded = unserialize(accessToken)
-    if (!decoded || !me.value || (decoded && me.value && decoded!.roomId !== me.value?.roomId)) {
-      localStorage.setItem('access_token', accessToken)
+  const store = (newAccessToken: string): void => {
+    const decoded = unserialize(newAccessToken)
+    if (
+      !decoded || !me.value
+      || (decoded && me.value && decoded.roomId !== me.value?.roomId)
+    ) {
+      localStorage.setItem('access_token', newAccessToken)
+      accessToken.value = newAccessToken;
     }
   }
 
   return {
     store,
     authorization,
+    accessToken,
     reset,
     unserialize,
     me,
