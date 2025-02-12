@@ -1,7 +1,12 @@
 <template>
   <base-dynamic-sidebar
     :title="`${$t('room.components.sidebars.membersSidebar.title')} (${room?.members.length})`"
-    @close="emit('close')"
+    @close="
+      () => {
+        emit('close')
+        edit = null
+      }
+    "
     :is-shown="isShown"
   >
     <ul>
@@ -10,22 +15,27 @@
           member.displayName.slice(0, 1)
         }}</span>
         <span class="display-name">
-          <span v-if="!edit">{{ member.displayName }}</span>
+          <span v-if="edit !== member.id">{{ member.displayName }}</span>
           <input v-else v-model="nickname" />
 
-          <span v-if="!edit" class="connection-status">{{
+          <span v-if="edit !== member.id" class="connection-status">{{
             member.isConnected ? 'Connecté' : 'Deconnecté'
           }}</span>
         </span>
         <button
-          @click="toggleEdit"
+          @click="toggleEdit(member.id)"
           v-if="member.id === me?.clientId"
           class="icon toggle-edit"
           :class="!edit ? 'icon-edit' : 'icon-validate'"
+          :disabled="!!edit && nickname.length <= 3"
         />
 
-        <span v-if="!edit" class="owner">{{
+        <!-- On affiche tout les tags sauf si il y a une edit du notre -->
+        <span v-if="room.ownerId == member.id && edit !== member.id" class="owner">{{
           $t('room.components.sidebars.membersSidebar.owner')
+        }}</span>
+        <span v-else-if="edit !== member.id" class="member">{{
+          $t('room.components.sidebars.membersSidebar.member')
         }}</span>
       </li>
     </ul>
@@ -49,31 +59,35 @@ const { room } = storeToRefs(useConnectedRoom())
 const emit = defineEmits(['close'])
 
 const nickname = ref<string>('')
-const edit = ref<boolean>(false)
+const edit = ref<string | null>(null)
 
 const { error, handleRequest } = useAPIRequest<{ success: true }>({
   method: 'POST',
 })
 
-const toggleEdit = () => {
-  edit.value = !edit.value
+console.log(room.value, room.value.ownerId)
+
+const toggleEdit = (value: string) => {
+  edit.value = edit.value === null ? value : null
 }
 
 const changeNickname = async () => {
-  await handleRequest({
-    endpoint: `/rooms/actions/${room.value.id}/change-nickname`,
-    body: {
-      newNickname: nickname.value,
-    },
-  })
-
-  if (error.value) {
-    window.room.modal.open({
-      type: 'ERROR',
-      title: 'Oups',
-      description: error.value.message,
+  if (nickname.value.length >= 3) {
+    await handleRequest({
+      endpoint: `/rooms/actions/${room.value.id}/change-nickname`,
+      body: {
+        newNickname: nickname.value,
+      },
     })
-    return
+
+    if (error.value) {
+      window.room.modal.open({
+        type: 'ERROR',
+        title: 'Oups',
+        description: error.value.message,
+      })
+      return
+    }
   }
 }
 
@@ -96,7 +110,7 @@ const generateRandomStyle = () => {
 }
 
 watch(edit, (value, oldValue) => {
-  if (value !== oldValue && value === false && oldValue !== undefined) {
+  if (value !== oldValue && value === null && oldValue !== undefined) {
     changeNickname()
   }
 })
@@ -150,7 +164,10 @@ ul {
     & > button.toggle-edit {
       padding: 0.5em;
       border-radius: 100px;
-
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
       &::before {
         position: unset;
         font-size: 1.2em;
@@ -163,9 +180,16 @@ ul {
       }
     }
 
-    & > span.owner {
-      background-color: $secondary-200;
-      color: $gray-3;
+    & > span {
+      &.owner {
+        background-color: $secondary-100;
+        color: $gray-3;
+      }
+      &.member {
+        background-color: $secondary-300;
+        color: $gray-3;
+      }
+
       padding: 0.4em 0.8em;
       border-radius: 100px;
 
